@@ -13,6 +13,9 @@ http://www.amazon.co.jp/gp/product/B00AW0AC06
 
 ## License
 
+http://creativecommons.org/licenses/by-nc/3.0/
+
 "ScalikeJDBC Cookbook" by Kazuhiro Sera is licensed under a Creative Commons Attribution-NonCommercial 3.0 Unported License.
+
 Based on a work at https://github.com/seratch/scalikejdbc-cookbook.
 
