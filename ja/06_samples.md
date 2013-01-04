@@ -205,7 +205,7 @@ DB autoCommit { implicit s =>
 }
 ```
 
-　サポートされていない型の場合はそのまま java.lang.Object として JDBC ドライバーに渡します。1.4.1 の時点で拡張ポイントは提供していないので、もしまだ対応されていない型で対応すべき型があれば、GitHub での issue 登録、pull request をお待ちしております。
+　サポートされていない型の場合はそのまま java.lang.Object として JDBC ドライバーに渡します。1.4.3 の時点で拡張ポイントは提供していないので、もしまだ対応されていない型で対応すべき型があれば、GitHub での issue 登録、pull request をお待ちしております。
 
 ### auto-increment な id を取得する
 

@@ -6,7 +6,7 @@
 
 　以下のコード例をコピーして sbt console 上で実行してみてください。なお、本書の内容はすべて GitHub のプロジェクトで公開されていますので併せてご参照ください。
 
-https://github.com/seratch/scalikejdbc-cookbook
+　https://github.com/seratch/scalikejdbc-cookbook
 
 ### コネクションプールの初期化
 
@@ -189,7 +189,7 @@ val members: List[Member] = DB readOnly { implicit session =>
 
 　Scala 2.10.0 から [String Interpolation (SIP-11)](http://docs.scala-lang.org/sips/pending/string-interpolation.html) が導入され、文字列に「${ ... }」で囲んだ式を埋め込むことができるようになりました。
 
-　ScalikeJDBC も Scala 2.10 以降では、この機能を活用した「SQL インターポレーション」という拡張機能を提供しています。1.4.1 時点では Scala 2.9 のサポートを考慮して本体とは別の拡張機能という扱いにしていますが、Scala 2.9 のサポートの考慮が必要でないと判断できるタイミングで本体にマージする方針です。
+　ScalikeJDBC も Scala 2.10 以降では、この機能を活用した「SQL インターポレーション」という拡張機能を提供しています。1.4.3 時点では Scala 2.9 のサポートを考慮して本体とは別の拡張機能という扱いにしていますが、Scala 2.9 のサポートの考慮が必要でないと判断できるタイミングで本体にマージする方針です。
 
 　SQL インターポレーションは scalikejdbc-interpolation という別の jar で提供されています。build.sbt を以下のように書き換えます。
 

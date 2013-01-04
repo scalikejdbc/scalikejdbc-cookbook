@@ -76,7 +76,7 @@ ConnectionPool.singleton("jdbc:h2:mem:db", "", "",
 
 ## Commons DBCP 以外のコネクションプールを使う
 
-　上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 1.4.1 時点では標準ではこの実装のみを提供しています。
+　上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 1.4.3 時点では標準ではこの実装のみを提供しています。
 
 　別のコネクションプールの実装を使いたいという場合は以下のようにして拡張することができます。
 

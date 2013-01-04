@@ -10,7 +10,7 @@
 
 　sbt は Scala でデファクトスタンダードになっているビルドツールです。
 
-　[http://www.scala-sbt.org/](http://www.scala-sbt.org/)
+　http://www.scala-sbt.org/
 
 　sbt の起動自体は sbt-launch.jar を java コマンドで起動するだけですが、Mac ユーザの方は MacPorts や 
 
