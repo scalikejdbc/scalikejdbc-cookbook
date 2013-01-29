@@ -5,7 +5,7 @@ ScalikeJDBC Cookbook
 
 ## Japanese Edition
 
-In the beginning, Japaense Edition is now available on Kindle store since 2013 January.
+In the beginning, Japanese edition is now available on Kindle store since 2013 January.
 
 ScalikeJDBC Cookbook 日本語版 [Kindle版]
 
