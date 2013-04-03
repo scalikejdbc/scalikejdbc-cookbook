@@ -90,10 +90,14 @@ SQLInterpolation に SQLSyntaxSupport というジョインクエリを書く場
     case class Team(id: Long, name: String)
 
     object Member extends SQLSyntaxSupport[Member] {
-      def apply(m: ResultName[Member])(implicit rs: WrappedResultSet) = new Member(id = rs.long(m.id), teamId = rs.long(m.teamId))
+      def apply(m: ResultName[Member])(implicit rs: WrappedResultSet): Member = {
+        new Member(id = rs.long(m.id), teamId = rs.long(m.teamId))
+      }
     }
     object Team extends SQLSyntaxSupport[Team] {
-      def apply(m: ResultName[Team])(implicit rs: WrappedResultSet) = new Team(id = rs.long(m.id), name = rs.long(m.name))
+      def apply(m: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
+        new Team(id = rs.long(m.id), name = rs.long(m.name))
+      }
     }
 
 上記のような定義をしておけば以下のようにクエリを書くことができます。
