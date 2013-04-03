@@ -12,5 +12,5 @@ ScalikeJDBC は、その名の通り Scala で直接 JDBC を扱うよりもよ�
 
 本書が ScalikeJDBC に関心を持ってくださった方のお役に立てれば幸いです。
 
-2013 年 4 月 瀬良 和弘 @seratch
+2013 年 1 月 瀬良 和弘 (Kazuhiro Sera [@seratch](http://seratch.net/))
 
