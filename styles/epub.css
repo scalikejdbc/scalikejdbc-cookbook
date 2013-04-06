@@ -1,0 +1,14 @@
+body {
+  padding:0;
+  margin:0;
+  font:12px Arial,serif;
+  line-height:1.5em;
+}
+
+pre {
+  background: #E8E6E7;
+}
+
+td {
+  background: #E8E6E7;
+}

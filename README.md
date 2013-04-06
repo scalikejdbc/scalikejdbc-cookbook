@@ -11,6 +11,10 @@ ScalikeJDBC Cookbook 日本語版 [Kindle版]
 
 http://www.amazon.co.jp/gp/product/B00AW0AC06
 
+## English Edition
+
+TODO
+
 ## License
 
 http://creativecommons.org/licenses/by-nc/3.0/

@@ -52,15 +52,22 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
     ConnectionPool.singleton("jdbc:h2:mem:db", "", "", 
       new ConnectionPoolSettings(initialSize = 20, maxSize = 50))
 
-　設定の一覧は以下の通りです
+設定の一覧は以下の通りです
 
-
-
-| キー | 内容 |
-|:--|:--|
-| initialSize | プールするコネクション数の最小値 |
-| maxSize | プールするコネクション数の最大値 |
-| validationQuery | 正常に接続できているか確認するための SQL |
+<table>
+<tr>
+<td>キー</td><td>内容</td>
+</tr>
+<tr>
+<td>initialSize</td><td>プールするコネクション数の最小値</td>
+</tr>
+<tr>
+<td>maxSize</td><td>プールするコネクション数の最大値</td>
+</tr>
+<tr>
+<td>validationQuery</td><td>正常に接続できているか確認するための SQL</td>
+</tr>
+</table>
 
 
 ## Commons DBCP 以外のコネクションプールを使う
