@@ -64,73 +64,13 @@ SQLInterpolation は Seq でパラメータを受け取ることができます�
       SQL(query).bind(memberIds: _*).map(*).list.apply()
     }
 
-### ジョインクエリ
+### join クエリ
 
 すべて生の SQL を書いているとジョインクエリを書くのはなかなか骨の折れる作業になります。
 
 元々存在する SQL があればそれを引き継いで組み込むのも現実かと思いますが、新しいプログラムであればなるべくメンテナンスしやすいものにしたいところです。
 
-SQLInterpolation に SQLSyntaxSupport というジョインクエリを書く場合に強力な機能がありますので、これを紹介します。
-
-まず、ベタに SQL を書くとこのようになるケースを考えます。
-
-    case class Member(id: Long, teamId: Long)
-    case class Team(id: Long, name: String)
-
-    val membersWithTeam: List[(Member, Team)] = sql"""
-      select m.id as m_id, m.team_id as m_tid, t.id as t_id, t.name as t_name
-      from member m inner join team t on m.team_id = t.id
-    """
-      .map(rs => (Member(rs.long("m_id"), rs.long("m_tid")), Team(rs.long("t_id"), rs.string("t_name"))))
-      .list.apply()
-
-これを SQLSyntaxSupport を使うと以下のようになります。
-
-    case class Member(id: Long, teamId: Long)
-    case class Team(id: Long, name: String)
-
-    object Member extends SQLSyntaxSupport[Member] {
-      def apply(m: ResultName[Member])(implicit rs: WrappedResultSet): Member = {
-        new Member(id = rs.long(m.id), teamId = rs.long(m.teamId))
-      }
-    }
-    object Team extends SQLSyntaxSupport[Team] {
-      def apply(m: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
-        new Team(id = rs.long(m.id), name = rs.long(m.name))
-      }
-    }
-
-上記のような定義をしておけば以下のようにクエリを書くことができます。
-
-    val (m, t) = (Member.syntax("m"), Team.syntax("t"))
-    val membersWithTeam: List[(Member, Team)] = sql"""
-      select ${m.result.*}, ${t.result.*}
-      from ${Member.as(m)} inner join ${Team.as(t)} on ${m.teamId} = ${t.id}
-    """
-      .map(implicit rs => (Member(m.resultName), Team(t.resultName)))
-      .list.apply()
-
-JPQL をご存知の方は何となく見た目が似ている印象をお持ちになるかもしれませんが、JPQL とは違って埋め込んでいるフィールドなどはすべてコンパイルチェック対象になりますし、埋め込んでいる部分は文字列として展開されるだけなので SQL 以外の独自文法は存在していません。
-
-以下のルールを把握するだけです。
-
-- m.teamId は m.team_id に展開されます
-- m.resut.teamId は m.team_id as ti_on_m に展開されます
-- m.resultName.teamId は ti_on_m に展開されます
-
-よって実際の SQL は以下のようになります。
-
-    select m.id as i_on_m, m.team_id as ti_on_m, t.id as i_on_t, t.name as n_on_t
-    from member as m inner join team as t on m.team_id = t.id
-
-実際、コンパニオンオブジェクトの定義などパッと見のコード量は増えているように思われる方もあるかもしれませんが
-
-- 文字列指定がなくなってタイプセーフになった
-- apply を一度定義するとマッピング処理はどんなジョインクエリでも再利用できる
-
-という利点があります。実際に使ってみていただければ実感いただけるかと思います。
-
-なお、Scala 2.10.1 時点で Scala の runtime reflection API にスレッドセーフでないという問題（SI-6240）があるため 1.5.1 時点ではまだリリースできていないのですが、この apply メソッドも自動生成が可能なので、将来的には基本の apply メソッドは手書きしなくてもすむようになる予定です（導入は scalikejdbc-interpolation 1.6 以降になる見込みです）。
+前のセクションで SQLInterpolation に SQLSyntaxSupport という機能を紹介しましたが join クエリを多く書く場合はぜひこれを活用してください。
 
 
 ## Insert
