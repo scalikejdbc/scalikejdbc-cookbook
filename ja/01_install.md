@@ -31,13 +31,13 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
 
 ここに build.sbt というファイルを作成して以下のような内容を記述してください。
 
-    scalaVersion := "2.10.1"
+    scalaVersion := "2.10.2"
 
     libraryDependencies ++= Seq(
-      "com.github.seratch" %% "scalikejdbc"  % "[1.5,)",
+      "com.github.seratch" %% "scalikejdbc"  % "[1.6,)",
       "org.slf4j"          %  "slf4j-simple" % "[1.7,)",
       "com.h2database"     %  "h2"           % "[1.3,)",
-      "org.specs2"         %% "specs2"       % "1.13" % "test"
+      "org.specs2"         %% "specs2"       % "1.14" % "test"
     )
 
 この状態で sbt console を起動してください。 scalikejdbc という package が import できるようになっていれば OK です。
@@ -47,7 +47,7 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
     [info] Set current project to default-de841d (in build file:/Users/seratch/tmp/cookbok/)
     [info] Starting scala interpreter...
     [info]
-    Welcome to Scala version 2.10.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
+    Welcome to Scala version 2.10.2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
     Type in expressions to have them evaluated.
     Type :help for more information.
 
