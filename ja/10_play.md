@@ -2,7 +2,7 @@
 
 [Play! Framework](http://www.playframework.com/) は元々は Ruby on Rails に強く影響された Java 向けの Web アプリケーションフレームワークでしたが、version 2.0 からは Akka ベースのアーキテクチャに書き直され、Scala での利用を基本とするフレームワークに生まれ変わりました。
 
-2013 年 4 月時点で最新の安定バージョンは 2.1.1 です。
+2013 年 8 月時点で最新の安定バージョンは 2.1.3 です。
 
 [http://www.playframework.com/](http://www.playframework.com/)
 
@@ -27,8 +27,8 @@ Play はプラガブルな構造になっているフレームワークです。
 H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
 
     val appDependencies = Seq(
-      "com.github.seratch" %% "scalikejdbc"             % "[1.4,)",
-      "com.github.seratch" %% "scalikejdbc-play-plugin" % "[1.4,)"
+      "com.github.seratch" %% "scalikejdbc"             % "[1.6,)",
+      "com.github.seratch" %% "scalikejdbc-play-plugin" % "[1.6,)"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
