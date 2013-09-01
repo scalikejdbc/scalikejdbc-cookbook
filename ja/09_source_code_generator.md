@@ -51,9 +51,9 @@ scalikejdbc-gen の使い方はとてもシンプルです。scalikejdbc-gen コ
 
     sbt "scalikejdbc-gen [table-name (class-name)]"
 
-例えば「 operation_history 」というテーブルがあって「 scalikejdbc-gen operation_history 」を実行すると「src/main/scala/models/OperationHistory.scala」と「src/test/scala/models/OperationHistorySpec.scala」を生成します。
+例えば「 operation\_history 」というテーブルがあって「 scalikejdbc-gen operation\_history 」を実行すると「src/main/scala/models/OperationHistory.scala」と「src/test/scala/models/OperationHistorySpec.scala」を生成します。
 
-Ruby の ActiveRecord のようなテーブル命名ルールで「 operation_histories 」というテーブル名の場合は「scalikejdbc-gen operation_history OperationHistory」と指定すると同様のファイル名で生成されます。クラス名を指定しないと「OperationHistories.scala」と「OperationHistoriesSpec.scala」を生成します。
+Ruby の ActiveRecord のようなテーブル命名ルールで「 operation\_histories 」というテーブル名の場合は「scalikejdbc-gen operation\_histories OperationHistory」と指定すると同様のファイル名で生成されます。クラス名を指定しないと「OperationHistories.scala」と「OperationHistoriesSpec.scala」を生成します。
 
 ## 実際に生成されるコード
 
