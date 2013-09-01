@@ -164,7 +164,7 @@ Scala 2.10.0 から [String Interpolation (SIP-11)](http://docs.scala-lang.org/s
 
 ScalikeJDBC も Scala 2.10 以降では、この機能を活用した「SQL インターポレーション」という拡張機能を提供しています。
 
-1.5.1 時点では Scala 2.9 のサポートを考慮して本体とは別の拡張機能という扱いにしていますが、Scala 2.9 のサポートの考慮が必要でないと判断できるタイミングで本体にマージする方針です。
+1.6.7 時点では Scala 2.9 のサポートを考慮して本体とは別の拡張機能という扱いにしていますが、Scala 2.9 のサポートの考慮が必要でないと判断できるタイミングで本体にマージする方針です。
 
 SQL インターポレーションは scalikejdbc-interpolation という別の jar で提供されていますので忘れずに libraryDependency に追加するようにしてください。
 
@@ -177,6 +177,13 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
       Member(id, name, birthday)
     }
 
+    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+      SQL("select id, name, birthday from members where id = {id}")
+        .bindByName('id -> id)
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
+        .single.apply()
+    }
+
 このように書けるようになります。#bindByName でバインド引数を名前指定していた箇所が不要になり、非常にシンプルになりました。
 
     import scalikejdbc.SQLInterpolation._
@@ -186,9 +193,51 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
+    
+    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+      sql"select id, name, birthday from members where id = ${id}"
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
+        .single.apply()
+    }
+
 
 非常に強力なので Scala 2.10 以降ではこちらのスタイルの方を推奨します。なお、本書ではこれ以降の章では基本的に SQL インターポレーションによるコード例を示します。
 
+### QueryDSL
+
+さらに 1.6.0 から新しく QueryDSL という機能が実装されました。これはタイプセーフな SQL ビルダーです。上記の SQL インターポレーションのオブジェクトを生成します。
+
+    import scalikejdbc._, SQLInterpolation._
+    
+    case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
+    object Member extends SQLSyntaxSupport[Member] {
+      override tableName = "members"
+      override columnNames = Seq("id", "name", "birthday")
+      
+      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+        val id = withSQL { 
+          insert.into(Member).namedValues(
+            column.name -> name,
+            column.birthday -> birthday
+          )
+        }.updateAndReturnGeneratedKey.apply()
+        Member(id, name, birthday)
+      }
+      
+      def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+        val m = Member.syntax("m")
+        withSQL { select.from(Member as m).where.eq(m.id, id) }
+          .map { rs => Member(
+            id       = rs.long(m.resultName.id), 
+            name     = rs.string(m.resultName.name),
+            birthday = rs.timestampOpt(m.resultName.birthday).map(_.toDateTime)) 
+          }.single.apply()
+      }
+    }
+
+パッと見では、記述量が増えているように見えますが、文字列を SQL の実行部分で文字列を指定する部分がほとんどなくなりました。
+
+これにより、複雑な join クエリなども DRY に対応できるようになります。ある程度の規模のアプリケーションを開発する場合、QueryDSL を使う方が開発効率は良くなります。
 
 ## まとめ
 
