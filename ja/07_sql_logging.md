@@ -70,3 +70,16 @@ slf4j-api をサポートする実装を指定してください。以下では 
 
 　あまり問題になるケースはないかとは思いますが、ここに出力された SQL は ScalikeJDBC が SQL テンプレートから組み立てたものなので、実際に JDBC ドライバーから DB に発行されたクエリと全く同じであるとは限りません（見やすくするために不要な空白を除去するなどの処理も入っています）。
 
+## シングルラインモード
+
+上記のようにスタックトレースまでは不要で、実行した SQL を一行で出力するだけでよいという場合はシングルラインモードを有効にしてください。
+
+    GlobalSettings.loggingSQLAndTime = new LoggingSQLAndTimeSettings(
+      enabled = true,
+      singleLineMode = true,
+      logLevel = 'DEBUG
+    )
+
+以下のように出力されます。
+
+    2013-05-26 16:23:08,072 DEBUG [pool-4-thread-4] s.StatementExecutor$$anon$1 [Log.scala:81] [SQL Execution] select * from user where email = 'guillaume@sample.com'; (0 ms)
