@@ -29,7 +29,7 @@ ScalikeJDBC のバージョニングポリシーは
 
 ## 貢献するには
 
-ScalikeJDBC は [GitHub](http://git.io/scalikejdbc) 上で開発されています。issue の登録、パッチの提供ともに GitHub の issue 管理、pull request で受け付けています。
+ScalikeJDBC は [GitHub](http://git.io/scalikejdbc) 上で開発されています。issue の登録、パッチの提供ともに GitHub の issue 管理、pull request で受け付けています。最低限は HSQLDB だけで動作確認、でも十分です。
 
 GitHub 上では、日本以外のユーザの方のためにできる限り英語でのやり取りを希望しています（英語が上手かどうかはともかく！）。まずは日本語で、という場合はお気軽に Twitter 上やメールなどでまずはご連絡いただければと思います。
 
