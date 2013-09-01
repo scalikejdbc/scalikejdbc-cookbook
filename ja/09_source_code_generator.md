@@ -15,7 +15,7 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
     // JDBC ドライバーの指定を忘れずに
     libraryDependencies += "org.hsqldb" % "hsqldb" % "[2,)"
 
-    addSbtPlugin("com.github.seratch" %% "scalikejdbc-mapper-generator" % "[1.5,)")
+    addSbtPlugin("com.github.seratch" %% "scalikejdbc-mapper-generator" % "[1.6,)")
 
 ### project/scalikejdbc.properties
 
@@ -31,8 +31,8 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
     generator.packageName=models
     # ソースコードの改行コード: LF/CRLF
     geneartor.lineBreak=LF
-    # テンプレート: basic/namedParameters/executable/interpolation
-    generator.template=interpolation
+    # テンプレート: basic/namedParameters/executable/interpolation/queryDsl
+    generator.template=queryDsl
     # テストのテンプレート: specs2unit/specs2acceptance/ScalaTestFlatSpec
     generator.testTemplate=specs2unit
     # 生成するファイルの文字コード
@@ -89,9 +89,9 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「operation_his
       birthday: Option[LocalDate] = None,
       createdAt: DateTime) {
 
-      def save()(implicit session: DBSession = Member.autoSession): Member = Member.update(this)(session)
+      def save()(implicit session: DBSession = Member.autoSession): Member = Member.save(this)(session)
 
-      def destroy()(implicit session: DBSession = Member.autoSession): Unit = Member.delete(this)(session)
+      def destroy()(implicit session: DBSession = Member.autoSession): Unit = Member.destroy(this)(session)
 
     }
 
@@ -115,26 +115,29 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「operation_his
       val autoSession = AutoSession
 
       def find(id: Int)(implicit session: DBSession = autoSession): Option[Member] = {
-        sql"""select ${m.result.*} from ${Member as m} where ID = ${id}"""
-          .map(Member(m.resultName)).single.apply()
+        withSQL {
+          select.from(Member as m).where.eq(m.id, id)
+        }.map(Member(m.resultName)).single.apply()
       }
 
       def findAll()(implicit session: DBSession = autoSession): List[Member] = {
-        sql"""select ${m.result.*} from ${Member as m}""".map(Member(m.resultName)).list.apply()
+        withSQL(select.from(Member as m)).map(Member(m.resultName)).list.apply()
       }
 
       def countAll()(implicit session: DBSession = autoSession): Long = {
-        sql"""select count(1) from ${Member.table}""".map(rs => rs.long(1)).single.apply().get
+        withSQL(select(sqls"count(1)").from(Member as m)).map(rs => rs.long(1)).single.apply().get
       }
 
       def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Member] = {
-        sql"""select ${m.result.*} from ${Member as m} where ${where}"""
-          .map(Member(m.resultName)).list.apply()
+        withSQL {
+          select.from(Member as m).where.append(sqls"${where}")
+        }.map(Member(m.resultName)).list.apply()
       }
 
       def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
-        sql"""select count(1) from ${Member as m} where ${where}"""
-          .map(_.long(1)).single.apply().get
+        withSQL {
+          select(sqls"count(1)").from(Member as m).where.append(sqls"${where}")
+        }.map(_.long(1)).single.apply().get
       }
 
       def create(
@@ -142,19 +145,19 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「operation_his
         description: Option[String] = None,
         birthday: Option[LocalDate] = None,
         createdAt: DateTime)(implicit session: DBSession = autoSession): Member = {
-        val generatedKey = sql"""
-          insert into ${Member.table} (
-            NAME,
-            DESCRIPTION,
-            BIRTHDAY,
-            CREATED_AT
-          ) VALUES (
-            ${name},
-            ${description},
-            ${birthday},
-            ${createdAt}
+        val generatedKey = withSQL {
+          insert.into(Member).columns(
+            column.name,
+            column.description,
+            column.birthday,
+            column.createdAt
+          ).values(
+            name,
+            description,
+            birthday,
+            createdAt
           )
-          """.updateAndReturnGeneratedKey.apply()
+        }.updateAndReturnGeneratedKey.apply()
 
         Member(
           id = generatedKey.toInt,
@@ -164,24 +167,21 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「operation_his
           createdAt = createdAt)
       }
 
-      def update(m: Member)(implicit session: DBSession = autoSession): Member = {
-        sql"""
-          update
-            ${Member.table}
-          set
-            ID = ${m.id},
-            NAME = ${m.name},
-            DESCRIPTION = ${m.description},
-            BIRTHDAY = ${m.birthday},
-            CREATED_AT = ${m.createdAt}
-          where
-            ID = ${m.id}
-          """.update.apply()
+      def save(m: Member)(implicit session: DBSession = autoSession): Member = {
+        withSQL {
+          update(Member as m).set(
+            m.id -> m.id,
+            m.name -> m.name,
+            m.description -> m.description,
+            m.birthday -> m.birthday,
+            m.createdAt -> m.createdAt
+          ).where.eq(m.id, m.id)
+        }.update.apply()
         m
       }
 
-      def delete(m: Member)(implicit session: DBSession = autoSession): Unit = {
-        sql"""delete from ${Member.table} where ID = ${m.id}""".update.apply()
+      def destroy(m: Member)(implicit session: DBSession = autoSession): Unit = {
+        withSQL { delete.from(Member).where.eq(column.id, m.id) }.update.apply()
       }
 
     }
@@ -213,28 +213,29 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「operation_his
           count should be_>(0L)
         }
         "find by where clauses" in new AutoRollback {
-          val results = Member.findAllBy(sqls"ID = ${123}")
+          val results = Member.findAllBy(sqls.eq(m.id, 123))
           results.size should be_>(0)
         }
         "count by where clauses" in new AutoRollback {
-          val count = Member.countBy(sqls"ID = ${123}")
+          val count = Member.countBy(sqls.eq(m.id, 123))
           count should be_>(0L)
         }
         "create new record" in new AutoRollback {
           val created = Member.create(name = "MyString", createdAt = DateTime.now)
           created should not beNull
         }
-        "update a record" in new AutoRollback {
+        "save a record" in new AutoRollback {
           val entity = Member.findAll().head
-          val updated = Member.update(entity)
+          val updated = Member.save(entity)
           updated should not equalTo(entity)
         }
-        "delete a record" in new AutoRollback {
+        "destroy a record" in new AutoRollback {
           val entity = Member.findAll().head
-          Member.delete(entity)
+          Member.destroy(entity)
           val shouldBeNone = Member.find(123)
           shouldBeNone.isDefined should beFalse
         }
       }
 
     }
+
