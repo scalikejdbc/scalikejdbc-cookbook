@@ -27,8 +27,8 @@ Play はプラガブルな構造になっているフレームワークです。
 H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
 
     val appDependencies = Seq(
-      "com.github.seratch" %% "scalikejdbc"             % "[1.6,)",
-      "com.github.seratch" %% "scalikejdbc-play-plugin" % "[1.6,)"
+      "com.github.seratch" %% "scalikejdbc"             % "[1.7,)",
+      "com.github.seratch" %% "scalikejdbc-play-plugin" % "[1.7,)"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

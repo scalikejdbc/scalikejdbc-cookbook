@@ -7,8 +7,8 @@
 ScalaTest と specs2 にそれぞれ同等のサポート機能を提供するサブプロジェクトです。1.4.2 から提供が開始されました。
 
     val appDependencies = Seq(
-      "com.github.seratch" %% "scalikejdbc"      % "[1.6,)",
-      "com.github.seratch" %% "scalikejdbc-test" % "[1.6,)"  % "test",
+      "com.github.seratch" %% "scalikejdbc"      % "[1.7,)",
+      "com.github.seratch" %% "scalikejdbc-test" % "[1.7,)"  % "test",
       "org.scalatest"      %% "scalatest"        % "1.9.1"   % "test",
       "org.specs2"         %% "specs2"           % "1.14"    % "test"
     )

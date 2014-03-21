@@ -34,7 +34,7 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
     scalaVersion := "2.10.2"
 
     libraryDependencies ++= Seq(
-      "com.github.seratch" %% "scalikejdbc"  % "[1.6,)",
+      "com.github.seratch" %% "scalikejdbc"  % "[1.7,)",
       "org.slf4j"          %  "slf4j-simple" % "[1.7,)",
       "com.h2database"     %  "h2"           % "[1.3,)",
       "org.specs2"         %% "specs2"       % "1.14" % "test"

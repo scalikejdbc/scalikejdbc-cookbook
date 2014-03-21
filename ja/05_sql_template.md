@@ -58,7 +58,7 @@ Scala 2.10.0 から使えるようになった SIP-11 String Interpolation に�
 
     scalaVersion := "2.10.2"
     
-    libraryDependencies += "com.github.seratch" %% "scalikejdbc-interpolation" % "[1.6,)",
+    libraryDependencies += "com.github.seratch" %% "scalikejdbc-interpolation" % "[1.7,)",
 
 「${expression}」でパラメータとして式を埋め込みます。
 
