@@ -20,15 +20,15 @@ ScalikeJDBC の SQL("...") から始まる API は Play が提供する Anorm �
 
 Play はプラガブルな構造になっているフレームワークです。ScalikeJDBC も Play プラグインを提供し、スムーズに Play アプリに組み込めるようサポートしています。
 
-[https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-play-plugin](https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-play-plugin)
+[https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-plugin](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-plugin)
 
 ### project/Build.scala
 
 H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
 
     val appDependencies = Seq(
-      "com.github.seratch" %% "scalikejdbc"             % "[1.7,)",
-      "com.github.seratch" %% "scalikejdbc-play-plugin" % "[1.7,)"
+      "org.scalikejdbc" %% "scalikejdbc"             % "[1.7,)",
+      "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "[1.7,)"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
@@ -84,11 +84,11 @@ Play の標準の DB プラグインと同じキー名で接続設定を記述�
 
 1.5.2 から Play アプリのテスト用に fixture 機能を提供しています。
 
-[https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin](https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin)
+[https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin)
 
 実際にどのようにして使用するかの詳細はこちらのサンプルを参照してください。
 
-[https://github.com/seratch/scalikejdbc/blob/master/scalikejdbc-play-plugin/test/zentasks](https://github.com/seratch/scalikejdbc/blob/master/scalikejdbc-play-plugin/test/zentasks)
+[https://github.com/scalikejdbc/scalikejdbc/blob/master/scalikejdbc-play-plugin/test/zentasks](https://github.com/scalikejdbc/scalikejdbc/blob/master/scalikejdbc-play-plugin/test/zentasks)
 
 ### conf/play.plugins
 

@@ -2,7 +2,7 @@
 
 dbconsole は sbt console を拡張したものです。
 
-[https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-cli](https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-cli)
+[https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-cli](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-cli)
 
 JDBC 経由で以下の DB に接続できるツールです。
 
@@ -65,7 +65,7 @@ dbconsole -e で設定を編集できます。これは上記の config.properti
 
     Starting sbt console for sandbox...
 
-    [info] Set current project to default-8d98e7 (in build file:/Users/seratch/bin/scalikejdbc-cli/)
+    [info] Set current project to default-8d98e7 (in build file:/Users/scalikejdbc/bin/scalikejdbc-cli/)
     [info] Starting scala interpreter...
     [info]
     import scalikejdbc._

@@ -1,6 +1,6 @@
 # はじめに
 
-この書籍は主に筆者が開発・メンテナンスしている [ScalikeJDBC](https://github.com/seratch/scalikejdbc) という Scala の DB アクセスライブラリの利用方法について余すことなく解説したものです。
+この書籍は主に筆者が開発・メンテナンスしている [ScalikeJDBC](https://github.com/scalikejdbc/scalikejdbc) という Scala の DB アクセスライブラリの利用方法について余すことなく解説したものです。
 
 ScalikeJDBC は、その名の通り Scala で直接 JDBC を扱うよりもより Scala らしく書ける API を提供するライブラリです。ストレスなく柔軟に SQL を使った DB アクセスを Scala のアプリケーションで実現することを目指しています。
 

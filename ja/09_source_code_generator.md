@@ -4,7 +4,7 @@ mapper-generator は DB からリバースエンジニアリングして、Scali
 
 記述量がそれなりに多くなる傾向のある ScalikeJDBC では非常に重要なツールです。
 
-[https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-mapper-generator](https://github.com/seratch/scalikejdbc/tree/master/scalikejdbc-mapper-generator)
+[https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-mapper-generator](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-mapper-generator)
 
 ## 準備
 
@@ -15,7 +15,7 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
     // JDBC ドライバーの指定を忘れずに
     libraryDependencies += "org.hsqldb" % "hsqldb" % "[2,)"
 
-    addSbtPlugin("com.github.seratch" %% "scalikejdbc-mapper-generator" % "[1.7,)")
+    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "[1.7,)")
 
 ### project/scalikejdbc.properties
 

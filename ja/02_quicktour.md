@@ -6,7 +6,7 @@ sbt プロジェクトが準備できたので、早速 ScalikeJDBC で SQL を�
 
 以下のコード例をコピーして sbt console 上で実行してみてください。なお、本書の内容はすべて GitHub のプロジェクトで公開されていますので併せてご参照ください。
 
-[https://github.com/seratch/scalikejdbc-cookbook](https://github.com/seratch/scalikejdbc-cookbook)
+[https://github.com/scalikejdbc/scalikejdbc-cookbook](https://github.com/scalikejdbc/scalikejdbc-cookbook)
 
 ### コネクションプールの初期化
 

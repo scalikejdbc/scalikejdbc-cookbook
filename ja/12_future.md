@@ -39,7 +39,7 @@ Twitter: [@seratch](http://twitter.com/seratch)
 
 また、本書の誤りや改善点があれば、ぜひともお知らせください。本書の内容は下記のプロジェクトで公開しております。issue 登録、pull request をお待ちしております。
 
-[https://github.com/seratch/scalikejdbc-cookbook](https://github.com/seratch/scalikejdbc-cookbook)
+[https://github.com/scalikejdbc/scalikejdbc-cookbook](https://github.com/scalikejdbc/scalikejdbc-cookbook)
 
 
 ## 最後に
