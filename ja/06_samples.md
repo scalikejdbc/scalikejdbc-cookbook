@@ -9,6 +9,7 @@
 PK 検索では、0 件または 1 件の結果がヒットすることが想定されます。このような場合は Option 型で結果が取得できるのが自然です。ScalikeJDBC は #single という指定で Option 型の結果が返ります。2 件以上ヒットした場合は例外を throw します。
 
     val id = 12345
+    val * = (rs: WrappedResultSet) => Member(rs.long("id"), rs.string("name"))
     val member: Option[Member] = DB readOnly { implicit s =>
       sql"select * from members where id = ${id}".map(*).single.apply()
     }
@@ -50,7 +51,6 @@ count の結果は #single で取得して Some#get() で取り出します。
 SQLInterpolation は Seq でパラメータを受け取ることができます。
 
     val members = DB readOnly { implicit s =>
-      val * = (rs: WrappedResultSet) => Member(rs.long("id"), rs.string("name"))
       val memberIds = List(1, 2, 3)
       sql"select * from members where id in (${memberIds})".map(*).list.apply()
     }
