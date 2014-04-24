@@ -145,7 +145,7 @@ JPQL をご存知の方は何となく見た目が似ている印象をお持ち
 以下のルールを把握するだけです。
 
 - m.teamId は m.team_id に展開されます
-- m.resut.teamId は m.team_id as ti_on_m に展開されます
+- m.result.teamId は m.team_id as ti_on_m に展開されます
 - m.resultName.teamId は ti_on_m に展開されます
 
 よって実際の SQL は以下のようになります。
