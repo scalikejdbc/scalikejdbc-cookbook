@@ -160,7 +160,7 @@ JPQL をご存知の方は何となく見た目が似ている印象をお持ち
 
 という利点があります。実際に使ってみていただければ実感いただけるかと思います。
 
-なお、Scala 2.10.3 時点で Scala の runtime reflection API にスレッドセーフでないという問題（SI-6240）があるため 1.6.7 時点ではまだリリースできていないのですが、この apply メソッドも自動生成が可能なので、将来的には基本の apply メソッドは手書きしなくてもすむようになる予定です（導入は scalikejdbc-interpolation 1.7 以降になる見込みです）。
+なお、Scala 2.10.3 時点で Scala の runtime reflection API にスレッドセーフでないという問題（SI-6240）があるため 1.6.7 時点では基本のapplyメソッドを手書きする必要がありました。しかし、現在はScalikeJDBCのmapper-generatorにより自動生成できます。scalikejdbc-interpolation 1.xxxから導入されました。
 
 デフォルトではテーブル名はコンパニオンオブジェクトの名前をアンダースコア区切りに変換（例: TeamMember -> team_member）し、カラム名一覧は初回アクセス時に JDBC のメタ情報から取得して、キャッシュするようになっています。
 
