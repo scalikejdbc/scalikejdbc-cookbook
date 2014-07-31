@@ -192,15 +192,18 @@ JPQL をご存知の方は何となく見た目が似ている印象をお持ち
       (${123}, ${"Alice"}, ${None}, ${now}, ${now})
     """.update.apply()
 
-は以下のように記述できます。SQL インターポレーションと違って SQLSyntaxSupport を継承した
+は以下のように記述できます（SQLSyntaxSupport を継承した Member object を定義する必要があります）。
 
     object Member extends SQLSyntaxSupport[Member] {
     
-      withSQL { 
-        insert.into(Member)
-          .column(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
-          .values(123, "Alice", None, now, now)
-      }.update.apply()
+      def insert(id: Long, name: String, memo: Option[String]) = DB.localTx { implicit s =>
+        val now = DateTime.now
+        withSQL { 
+          insert.into(Member)
+            .column(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
+            .values(id, name, memo, now, now)
+        }.update.apply()
+      }
     }
 
     val ordering: SQLSyntax = if (isDesc) sqls"desc" else sqls"asc" // or SQLSyntax("desc")
