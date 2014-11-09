@@ -31,13 +31,13 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
 
 ここに build.sbt というファイルを作成して以下のような内容を記述してください。
 
-    scalaVersion := "2.10.2"
+    scalaVersion := "2.11.4"
 
     libraryDependencies ++= Seq(
-      "org.scalikejdbc"    %% "scalikejdbc"  % "[1.7,)",
-      "org.slf4j"          %  "slf4j-simple" % "[1.7,)",
-      "com.h2database"     %  "h2"           % "[1.3,)",
-      "org.specs2"         %% "specs2"       % "1.14" % "test"
+      "org.scalikejdbc"  %% "scalikejdbc"  % "2.2.+",
+      "org.slf4j"        %  "slf4j-simple" % "1.7.+",
+      "com.h2database"   %  "h2"           % "1.4.+",
+      "org.specs2"       %% "specs2-core"  % "2.4.9" % "test"
     )
 
 この状態で sbt console を起動してください。 scalikejdbc という package が import できるようになっていれば OK です。
@@ -47,7 +47,7 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
     [info] Set current project to default-de841d (in build file:/Users/seratch/tmp/cookbok/)
     [info] Starting scala interpreter...
     [info]
-    Welcome to Scala version 2.10.2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
+    Welcome to Scala version 2.11.4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
     Type in expressions to have them evaluated.
     Type :help for more information.
 
@@ -56,9 +56,8 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
 
     scala> :q
 
-    [success] Total time: 8 s, completed Apr 3, 2013 10:35:46 PM
+    [success] Total time: 8 s, completed Nov 9, 2014 10:35:46 PM
     $
 
 　これで準備が整ったので、次のセクションからは実際に ScalikeJDBC を使ったコードを試してみましょう。
-
 

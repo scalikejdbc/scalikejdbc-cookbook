@@ -13,9 +13,9 @@ mapper-generator は DB からリバースエンジニアリングして、Scali
 sbt プラグイン設定を記述します。JDBC ドライバーの指定を忘れないようにしてください。
 
     // JDBC ドライバーの指定を忘れずに
-    libraryDependencies += "org.hsqldb" % "hsqldb" % "[2,)"
+    libraryDependencies += "org.hsqldb" % "hsqldb" % "2.+"
 
-    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "[1.7,)")
+    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "2.2.+")
 
 ### project/scalikejdbc.properties
 
@@ -79,7 +79,6 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「 operation\_h
     package models
 
     import scalikejdbc._
-    import scalikejdbc.SQLInterpolation._
     import org.joda.time.{LocalDate, DateTime}
 
     case class Member(
@@ -195,7 +194,6 @@ Ruby の ActiveRecord のようなテーブル命名ルールで「 operation\_h
     import scalikejdbc.specs2.mutable.AutoRollback
     import org.specs2.mutable._
     import org.joda.time._
-    import scalikejdbc.SQLInterpolation._
 
     class MemberSpec extends Specification {
 

@@ -75,8 +75,19 @@ readOnlySession と同様に autoCommitSession もあります。
       SQL("insert into events ..").bind(...).update.apply()
     }
 
-localTx はトランザクションのスコープを明示するものなので DBSession を取り出して値として利用することはできません。
+また、2.2.0 から TxBoundary という型クラスを指定することで例外以外のトランザクション境界をサポートするようになりました。
 
+    import scalikejdbc._
+    import scala.util.Try
+    import scalikejdbc.TxBoundary.Try._
+   
+    // Try が Failure だったら rollback されます
+    // この localTx 内から例外が投げられた場合も rollback します
+    val result: Try[Result] = DB localTx { implicit session =>
+      Try { doSomeStaff() }
+    }
+
+なお、localTx はトランザクションのスコープを明示するものなので DBSession を取り出して値として利用することはできません。
 
 ### withinTx
 

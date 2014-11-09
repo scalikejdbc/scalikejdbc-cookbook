@@ -5,7 +5,6 @@
 ConnectionPool というオブジェクトに JDBC の設定を渡します。JDBC ドライバーの読み込みは自動で行われないので Class.forName(String) を呼び出してください。
 
     import scalikejdbc._
-    import scalikejdbc.SQLInterpolation._
     Class.forName("org.h2.Driver")
     ConnectionPool.singleton("jdbc:h2:mem:db", "username", "password")
 
@@ -72,7 +71,7 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
 
 ## Commons DBCP 以外のコネクションプールを使う
 
-上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 1.6.7 時点では標準ではこの実装のみを提供しています。
+上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 2.2.0 時点では標準では commons-dbcp、commons-dbcp2、BoneCP の実装を提供しています。
 
 別のコネクションプールの実装を使いたいという場合は以下のようにして拡張することができます。
 
@@ -84,6 +83,19 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
     
     ConnectionPool.add('xxxx, url, user, password)(new MyConnectionPoolFactory)
 
+また DataSource 経由で利用するコネクションプールを登録することもできます。以下は HikariCP の設定例です。
+
+http://brettwooldridge.github.io/HikariCP/
+
+    val dataSource: DataSource = {
+      val ds = new HikariDataSource()
+      ds.setDataSourceClassName(dataSourceClassName)
+      ds.addDataSourceProperty("url", url)
+      ds.addDataSourceProperty("user", user)
+      ds.addDataSourceProperty("password", password)
+      ds
+    }
+    ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
 
 ## スレッドローカルなコネクション
 
