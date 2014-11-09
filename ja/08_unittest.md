@@ -7,10 +7,10 @@
 ScalaTest と specs2 にそれぞれ同等のサポート機能を提供するサブプロジェクトです。1.4.2 から提供が開始されました。
 
     val appDependencies = Seq(
-      "org.scalikejdbc"   %% "scalikejdbc"      % "[1.7,)",
-      "org.scalikejdbc"   %% "scalikejdbc-test" % "[1.7,)"  % "test",
-      "org.scalatest"     %% "scalatest"        % "1.9.1"   % "test",
-      "org.specs2"        %% "specs2"           % "1.14"    % "test"
+      "org.scalikejdbc"   %% "scalikejdbc"      % "2.2.+",
+      "org.scalikejdbc"   %% "scalikejdbc-test" % "2.2.+"   % "test",
+      "org.scalatest"     %% "scalatest"        % "2.2.1"   % "test",
+      "org.specs2"        %% "specs2-core"      % "2.4.9"   % "test"
     )
 
 ## 接続情報

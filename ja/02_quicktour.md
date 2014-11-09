@@ -134,9 +134,9 @@ Scala の暗黙のパラメータは、カリー化されたメソッドの最�
 
 ここまでの select の例では Map[String, Any] として結果を取得していましたが Member というクラスにマッピングするように書き換えてみます。
 
-ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設定は不要です。単に case class または通常の class として定義するだけで OK です（逆に言えば O/R マッパーのような機能は持っていないということです）。
+ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設定は不要です。単に case class または通常の class として定義するだけで OK です。
 
-また、NOT NULL でないカラムは Option 型として定義し、日付やタイムスタンプ型には [Joda Time](http://joda-time.sourceforge.net/) の DateTime、LocalDate を使うことを推奨します。以下のサンプルでその具体例を示します。
+また、NOT NULL でないカラムは Option 型として定義し、日付やタイムスタンプ型には [Joda Time](http://joda-time.sourceforge.net/) の DateTime、LocalDate を使うことを推奨します。Java SE 8 の Date Time API も利用可能ですが、それについては別途説明します。まずは以下のサンプルで Joda Time を使った具体例を示します。
 
     case class Member(
       id: Long, 
@@ -158,17 +158,15 @@ ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設
     }
     // => members: List[Member] = List(Member(1,Alice,None,Some(1980-01-01),2012-12-31T00:02:09.247+09:00), Member(2,Bob,None,None,2012-12-31T00:02:09.247+09:00))
 
-### SQL インターポレーション（Scala 2.10）
+### SQL インターポレーション
 
 Scala 2.10.0 から [String Interpolation (SIP-11)](http://docs.scala-lang.org/sips/pending/string-interpolation.html) が導入され、文字列に「${ ... }」で囲んだ式を埋め込むことができるようになりました。
 
-ScalikeJDBC も Scala 2.10 以降では、この機能を活用した「SQL インターポレーション」という拡張機能を提供しています。
+ScalikeJDBC はこの機能を活用した「SQL インターポレーション」という拡張機能を提供しています。
 
-1.6.7 時点では Scala 2.9 のサポートを考慮して本体とは別の拡張機能という扱いにしていますが、Scala 2.9 のサポートの考慮が必要でないと判断できるタイミングで本体にマージする方針です。
+SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引き起こす危険性がありますが sql"..." では外部入力が全てバインド変数になるためその心配がありません。基本的にこちらを使うことを推奨します。
 
-SQL インターポレーションは scalikejdbc-interpolation という別の jar で提供されていますので忘れずに libraryDependency に追加するようにしてください。
-
-　早速 SQL インターポレーションを使ってみましょう。これまでこのように書いていたものが
+早速 SQL インターポレーションを使ってみましょう。これまでこのように書いていたものが
 
     def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
@@ -186,8 +184,6 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
 
 このように書けるようになります。#bindByName でバインド引数を名前指定していた箇所が不要になり、非常にシンプルになりました。
 
-    import scalikejdbc.SQLInterpolation._
-
     def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
         .updateAndReturnGeneratedKey.apply()
@@ -196,18 +192,24 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
     
     def find(id: Long)(implicit session: DBSesion): Option[Member] = {
       sql"select id, name, birthday from members where id = ${id}"
-        .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
+        .map { rs => 
+          new Member(
+            id       = rs.long("id"), 
+            name     = rs.string("name"), 
+            birthday = rs.timestampOpt("birthday").map(_.toDateTime) 
+          )
+        }
         .single.apply()
     }
 
 
-非常に強力なので Scala 2.10 以降ではこちらのスタイルの方を推奨します。なお、本書ではこれ以降の章では基本的に SQL インターポレーションによるコード例を示します。
+現在の ScalikeJDBC では直接 SQL("...") を使うよりもこちらのスタイルの方を推奨しています。本書ではこれ以降の章では基本的に SQL インターポレーションによるコード例を示します。
 
 ### QueryDSL
 
-さらに 1.6.0 から新しく QueryDSL という機能が実装されました。これはタイプセーフな SQL ビルダーです。上記の SQL インターポレーションのオブジェクトを生成します。
+1.6.0 から追加された QueryDSL という機能も忘れてはいけません。これはタイプセーフな SQL ビルダーです。上記の SQL インターポレーションのオブジェクトを生成します。
 
-    import scalikejdbc._, SQLInterpolation._
+    import scalikejdbc._
     
     case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
     object Member extends SQLSyntaxSupport[Member] {
@@ -227,10 +229,13 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
       def find(id: Long)(implicit session: DBSesion): Option[Member] = {
         val m = Member.syntax("m")
         withSQL { select.from(Member as m).where.eq(m.id, id) }
-          .map { rs => Member(
-            id       = rs.long(m.resultName.id), 
-            name     = rs.string(m.resultName.name),
-            birthday = rs.timestampOpt(m.resultName.birthday).map(_.toDateTime)) 
+          .map { rs => 
+            new Member(
+              // rs.long の代わりに rs.get[Long] で型推論することもできます
+              id       = rs.get(m.resultName.id), 
+              name     = rs.get(m.resultName.name),
+              birthday = rs.get(m.resultName.birthday).map(_.toDateTime)
+            ) 
           }.single.apply()
       }
     }
@@ -238,6 +243,27 @@ SQL インターポレーションは scalikejdbc-interpolation という別の 
 パッと見では、記述量が増えているように見えますが、文字列を SQL の実行部分で文字列を指定する部分がほとんどなくなりました。
 
 これにより、複雑な join クエリなども DRY に対応できるようになります。ある程度の規模のアプリケーションを開発する場合、QueryDSL を使う方が開発効率は良くなります。
+
+### Auto Macros
+
+http://scalikejdbc.org/documentation/auto-macros.html
+
+さらに scalikejdbc-syntax-support-macro を使うと
+
+    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "2.2.+"
+
+以下のように `autoConstruct` というメソッドで簡潔に書くこともできます。
+
+    def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
+    
+    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+      val m = Member.syntax("m")
+      withSQL { select.from(Member as m).where.eq(m.id, id) }
+        .map(rs => extract(rs, m))
+        .single.apply()
+    }
+
+これによりボイラープレートな部分も削減できます。
 
 ## まとめ
 

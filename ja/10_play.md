@@ -2,7 +2,7 @@
 
 [Play! Framework](http://www.playframework.com/) は元々は Ruby on Rails に強く影響された Java 向けの Web アプリケーションフレームワークでしたが、version 2.0 からは Akka ベースのアーキテクチャに書き直され、Scala での利用を基本とするフレームワークに生まれ変わりました。
 
-2013 年 8 月時点で最新の安定バージョンは 2.1.3 です。
+2014 年 11 月時点で最新の安定バージョンは 2.3.6 です。
 
 [http://www.playframework.com/](http://www.playframework.com/)
 
@@ -26,13 +26,15 @@ Play はプラガブルな構造になっているフレームワークです。
 
 H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
 
-    val appDependencies = Seq(
-      "org.scalikejdbc" %% "scalikejdbc"             % "[1.7,)",
-      "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "[1.7,)"
-    )
-
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-    )
+    lazy val root = (project in file("."))
+      .enablePlugins(PlayScala)
+      .enablePlugins(SbtWeb)
+      .settings(
+        libraryDependencies = Seq(
+          "org.scalikejdbc" %% "scalikejdbc"             % "2.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "2.3.+"
+        )
+      )
 
 ### conf/play.plugins
 
@@ -75,14 +77,14 @@ Play の標準の DB プラグインと同じキー名で接続設定を記述�
     scalikejdbc.global.loggingSQLAndTime.warningThresholdMillis=1000
     scalikejdbc.global.loggingSQLAndTime.warningLogLevel=warn
 
-## Play 起動
+### Play 起動
 
-あとは通常通り play run で起動するだけです。もし設定に問題があれば最初の DB 接続時に例外が発生します。
+あとは通常通り sbt run で起動するだけです。もし設定に問題があれば最初の DB 接続時に例外が発生します。
 
 
 ## PlayFixturePlugin
 
-1.5.2 から Play アプリのテスト用に fixture 機能を提供しています。
+Play アプリのテスト用に fixture 機能を提供しています。
 
 [https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-play-fixture-plugin)
 
@@ -114,3 +116,19 @@ fixture データの生成と削除を記述します。
     # --- !Downs
     alter sequence project_seq restart with 1;
     delete from project;
+
+## DBPlugin との連携
+
+Play の標準で提供されている DBPlugin を無効にせずそのまま連携させるためのプラグインもあります。こちらを使う場合は上記の PlayPlugin は不要です。
+
+    libraryDependencies = Seq(
+      "org.scalikejdbc" %% "scalikejdbc"                  % "2.2.+",
+      "org.scalikejdbc" %% "scalikejdbc-dbplugin-adapter" % "2.3.+"
+    )
+
+conf/play.plugins に以下を追加します。
+
+    10000:scalikejdbc.PlayDBPluginAdapter
+
+こうすることで DBPlugin に依存しているものと ScalikeJDBC を同じ Play アプリケーションで無駄なく利用することができます。
+

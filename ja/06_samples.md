@@ -72,10 +72,26 @@ SQLInterpolation は Seq でパラメータを受け取ることができます�
 
 前のセクションで SQLInterpolation に SQLSyntaxSupport という機能を紹介しましたが join クエリを多く書く場合はぜひこれを活用してください。
 
+### Joda Time ではなく Java SE 8 の Date Time API を使う
+
+ScalikeJDBC は Java SE 7 のサポートも続けているので、拡張用の別のライブラリとして Date Time API をサポートしています。以下の通りライブラリを追加します。
+
+    libraryDependencies += "org.scalikejdbc" %% "scalikejdbc-jsr310" % "2.2.+"
+
+使い方は以下のようになります。`import scalikejdbc.jsr310._` を追加するだけですね。
+
+    import scalikejdbc._, jsr310._
+    import java.time._
+                                    
+    case class Group(id: Long, name: Option[String], createdAt: ZonedDateTime)
+    object Group extends SQLSyntaxSupport[Group] {
+      def apply(g: SyntaxProvider[Group])(rs: WrappedResultSet): Group = apply(g.resultName)(rs)
+      def apply(g: ResultName[Group])(rs: WrappedResultSet): Group = Group(rs.get(g.id), rs.get(g.name), rs.get(g.createdAt))
+    }
 
 ## Insert
 
-ScalikeJDBC では nullable な値を考慮して Option 型をバインド引数として受け入れます。また、java.sql.* の型を利用するよりも Joda Time の DateTime や LocalDate といったクラスを使用することを推奨します。これらの型の値はそのままバインド引数として渡すことが可能です。
+ScalikeJDBC では nullable な値を考慮して Option 型をバインド引数として受け入れます。また、java.sql.* の型を利用するよりも Joda Time の DateTime や LocalDate といったクラスや Java SE 8 の Date Time API を使用することを推奨します。これらの型の値はそのままバインド引数として渡すことが可能です。
 
     DB autoCommit { implicit s =>
       val (name, memo, createdAt) = ("Alice", Some("Wonderland"), org.joda.DateTime.now)
@@ -83,7 +99,15 @@ ScalikeJDBC では nullable な値を考慮して Option 型をバインド引�
         .update.apply()
     }
 
-サポートされていない型の場合はそのまま java.lang.Object として JDBC ドライバーに渡します。1.4.3 の時点で拡張ポイントは提供していないので、もしまだ対応されていない型で対応すべき型があれば、GitHub での issue 登録、pull request をお待ちしております。
+サポートされていない型の場合はそのまま java.lang.Object として JDBC ドライバーに渡しますが、それだと困るというケースも多いかと思います。その場合は ParameterBinder を指定することで対応できます。
+
+    val bytes = Array[Byte](1,2,3, ...)
+    val in = ByteArrayInputStream(bytes)
+    val bin = ParameterBinder(
+      value = in,
+      binder = (stmt, idx) => stmt.setBinaryStream(idx, in, bytes.length)
+    )
+    sql"insert into table (bin) values (${bin})".update.apply()
 
 ### auto-increment な id を取得する
 
@@ -102,7 +126,7 @@ insert と何ら変わりません。#update を指定します。
 
     val (name, newName) = ("Bob", "Bobby")
     DB localTx { implicit s =>
-      SQL("update members set name = ${newName} where name = ${name}")
+      sql"update members set name = ${newName} where name = ${name}"
         .update.apply()
     }
 

@@ -83,3 +83,4 @@ slf4j-api をサポートする実装を指定してください。以下では 
 以下のように出力されます。
 
     2013-05-26 16:23:08,072 DEBUG [pool-4-thread-4] s.StatementExecutor$$anon$1 [Log.scala:81] [SQL Execution] select * from user where email = 'guillaume@sample.com'; (0 ms)
+
