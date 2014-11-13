@@ -207,7 +207,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
     
     val m = Member.syntax("m")
     val names = select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
-      .map(rs => rs.long("name").list.apply()
+      .map(rs => rs.long(m.name)).list.apply()
 
 ## まとめ
 
