@@ -150,7 +150,7 @@ ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設
       name = rs.string("name"), 
       description = rs.stringOpt("description"),
       birthday = rs.dateOpt("birthday").map(_.toLocalDate), 
-      createdAt = rs.timestamp("created_at").toDateTime
+      createdAt = rs.jodaDateTime("created_at")
     )
     
     val members: List[Member] = DB readOnly { implicit session =>
@@ -234,7 +234,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
               // rs.long の代わりに rs.get[Long] で型推論することもできます
               id       = rs.get(m.resultName.id), 
               name     = rs.get(m.resultName.name),
-              birthday = rs.get(m.resultName.birthday).map(_.toDateTime)
+              birthday = rs.get(m.resultName.birthday)
             ) 
           }.single.apply()
       }
