@@ -31,7 +31,7 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
 
 ここに build.sbt というファイルを作成して以下のような内容を記述してください。
 
-    scalaVersion := "2.11.4"
+    scalaVersion := "2.11.6"
 
     libraryDependencies ++= Seq(
       "org.scalikejdbc"  %% "scalikejdbc"  % "2.2.+",
@@ -47,7 +47,7 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
     [info] Set current project to default-de841d (in build file:/Users/seratch/tmp/cookbok/)
     [info] Starting scala interpreter...
     [info]
-    Welcome to Scala version 2.11.4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
+    Welcome to Scala version 2.11.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_15).
     Type in expressions to have them evaluated.
     Type :help for more information.
 
