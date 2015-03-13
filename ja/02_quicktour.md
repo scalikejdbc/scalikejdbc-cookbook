@@ -136,7 +136,7 @@ Scala の暗黙のパラメータは、カリー化されたメソッドの最�
 
 ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設定は不要です。単に case class または通常の class として定義するだけで OK です。
 
-また、NOT NULL でないカラムは Option 型として定義し、日付やタイムスタンプ型には [Joda Time](http://joda-time.sourceforge.net/) の DateTime、LocalDate を使うことを推奨します。Java SE 8 の Date Time API も利用可能ですが、それについては別途説明します。まずは以下のサンプルで Joda Time を使った具体例を示します。
+また、NOT NULL でないカラムは Option 型として定義し、日付やタイムスタンプ型には [Joda Time](http://www.joda.org/joda-time/) の DateTime、LocalDate を使うことを推奨します。Java SE 8 の Date Time API も利用可能ですが、それについては別途説明します。まずは以下のサンプルで Joda Time を使った具体例を示します。
 
     case class Member(
       id: Long, 
