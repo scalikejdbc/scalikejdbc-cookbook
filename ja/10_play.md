@@ -32,6 +32,7 @@ H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
       .settings(
         libraryDependencies = Seq(
           "org.scalikejdbc" %% "scalikejdbc"             % "2.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-config"      % "2.2.+",
           "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "2.3.+"
         )
       )
