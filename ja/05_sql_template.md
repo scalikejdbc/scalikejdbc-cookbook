@@ -72,7 +72,7 @@ SQL インジェクション脆弱性を防止するため SQLSyntax のイン�
     val id: Int = 1234
 
     val names = sql"select name from member where id = ${id} order by id ${ordering}"
-                  .map(rs => rs.long("name").list.apply()
+                  .map(rs => rs.long("name")).list.apply()
 
 は、以下のような SQL として展開されます、
 
@@ -82,7 +82,7 @@ SQL インジェクション脆弱性を防止するため SQLSyntax のイン�
 
     val ids = Seq(1, 2, 3)
     val names = sql"select name from member where id in (${ids})"
-                  .map(rs => rs.long("name").list.apply()
+                  .map(rs => rs.long("name")).list.apply()
 
 これは以下のように展開されます。
 
