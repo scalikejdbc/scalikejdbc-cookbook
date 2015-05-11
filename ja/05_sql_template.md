@@ -196,7 +196,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
         val now = DateTime.now
         withSQL { 
           insert.into(Member)
-            .column(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
+            .columns(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
             .values(id, name, memo, now, now)
         }.update.apply()
       }
