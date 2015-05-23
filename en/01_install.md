@@ -4,11 +4,11 @@ We will briefly describe how to start a Scala project using ScalikeJDBC. Here we
 
 ## Scala
 
-Scala requires JDK for running on the JVM. Please make sure to have it installed.
+Make sure to have the JDK installed because Scala runs on the JVM.
 
 ## sbt
 
-sbt is a build tool that has become a _de facto_ standard in Scala.
+sbt is the _de facto_ standard build tool in Scala.
 
 [Http://www.scala-sbt.org/](http://www.scala-sbt.org/)
 
@@ -20,7 +20,7 @@ or via Homebrew;
 
     brew install sbt
 
-For Windows and Linux users, please download a zip file from the sbt official site. For more information there is a guide at the site.
+For Windows and Linux users, please download a zip file from the sbt official site. You can see the guide on the site for more detail.
 
 ## Adding ScalikeJDBC
 
@@ -59,4 +59,4 @@ Start the sbt console. If all goes well, you can then import the scalikejdbc pac
     [Success] Total time: 8 s, completed Nov 9, 2014 10:35:46 PM
     $
 
-It's now ready. Let's try writing actual code using ScalikeJDBC in the next section.
+Ok, now you are ready. Let's try writing actual code using ScalikeJDBC in the next section.
