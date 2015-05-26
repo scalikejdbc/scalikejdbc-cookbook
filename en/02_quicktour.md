@@ -36,17 +36,17 @@ There are no tables in the database yet. Let's create a table named `members` by
 
 Here we saw `{implicit session => }`, which might confuse you if you are not familiar with Scala because the variable `session` does not seem to be used anywhere else. I will briefly explain this.
 
-Firstly, `DB.autoCommit[A](...)` is a method that takes a function of type `(DBSession) => A` as its first argument. It's normally called in this manner;
+Firstly, `DB.autoCommit[A](...)` is a method that takes a function of type `(DBSession) => A` as its first argument. It's normally called in this manner:
 
     DB autoCommit { session =>
     }
 
-Secondly, if we add `implicit` to the `session`, it becomes an implicit parameter just like a variable declared as `implicit val` in this scope. That is to say, this piece of code;
+Secondly, if we add `implicit` to the `session`, it becomes an implicit parameter just like a variable declared as `implicit val` in this scope. That is to say, this piece of code:
 
     DB autoCommit { implicit session =>
     }
 
-is equivalent to the following;
+is equivalent to the following:
 
     DB autoCommit { session =>
      implicit val _session: DBSession = session
@@ -54,7 +54,7 @@ is equivalent to the following;
 
 The reason that the `session` should be an implicit parameter there is that the `apply` method of `SQL("...").execute.apply()` in the DB block implicitly expects a `DBSession` type parameter.
 
-Instead, a compile-time error occurs if you call the SQL execution part without the `implicit` like this;
+Instead, a compile-time error occurs if you call the SQL execution part without the `implicit` like this:
 
     scala> DB autoCommit { session =>
          |   SQL("""
@@ -73,7 +73,7 @@ Instead, a compile-time error occurs if you call the SQL execution part without 
 
 This `apply()` method is a method to actually issue an SQL and cause side effects. It, therefore, needs a connection and session state of the DB by the `DBSession` type implicit parameter.
 
-Implicit parameters in Scala are passed as the last parameter list of a curried method. The definition of the `apply()` method in this example has a signature such as the following;
+Implicit parameters in Scala are passed as the last parameter list of a curried method. The definition of the `apply()` method in this example has a signature such as the following:
 
     def apply()(implicit session: DBSession): Boolean
 
@@ -91,7 +91,7 @@ If no exception occured in the previous `create table`, a table should have been
 
 An empty `List` have been returned because there are still no data.
 
-Now, let's try to insert some records. Since the part that starts with `SQL` does not actually issue the SQL until you call the `apply()`, you can re-use it as many times as you like, such as;
+Now, let's try to insert some records. Since the part that starts with `SQL` does not actually issue the SQL until you call the `apply()`, you can re-use it as many times as you like, such as:
 
     import org.joda.time._
     DB localTx { implicit session =>
@@ -103,13 +103,13 @@ Now, let's try to insert some records. Since the part that starts with `SQL` doe
     }
 
 
-By the way, ScalikeJDBC allows you to use not only the normal JDBC template shown above, but also the named SQL template where you embed binding variables as `{name}`;
+By the way, ScalikeJDBC allows you to use not only the normal JDBC template shown above, but also the named SQL template where you embed binding variables as `{name}`:
 
     SQL("insert into members (name, birthday, created_at) values ({name}, {birthday}, {createdAt})")
       .bindByName('name -> name, 'birthday -> None, 'createdAt -> createdAt)
       .update.apply()
 
-as well as the executable template where you write binding variables in the comments accompanied by dummy values;
+as well as the executable template where you write binding variables in the comments accompanied by dummy values:
 
     SQL("""
       insert into members (name, birthday, created_at) values (
@@ -166,7 +166,7 @@ ScalikeJDBC offers an extension called "SQL interpolation" which takes advantage
 
 While there is a risk of causing an SQL injection vulnerability in misuse of `SQL("...")`, you don't have a worry of its happening with `sql"..."` because all external inputs become binding variables.
 
-So let's try the SQL interpolation. Instead of writing like this as previously seen;
+So let's try the SQL interpolation. Instead of writing like this as previously seen:
 
     def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
@@ -248,11 +248,11 @@ If you go with this style, complex join queries can be more DRY. When you develo
 
 http://scalikejdbc.org/documentation/auto-macros.html
 
-If you go even further, by using scalikejdbc-syntax-support-macro;
+If you go even further, by using scalikejdbc-syntax-support-macro:
 
     libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "2.2.+"
 
-you can write yet more concisely with the `autoConstruct` method as below;
+you can write yet more concisely with the `autoConstruct` method as below:
 
     def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
     
