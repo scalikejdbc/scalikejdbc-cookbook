@@ -2,15 +2,15 @@
 
 ## Sample for running SQL
 
-Since we have the sbt project set up, we are ready to run SQL using ScalikeJDBC. In this example I will use the [H2 Database](http://www.h2database.com/).
+Since we have the sbt project set up, let's go straight to run some SQL examples via ScalikeJDBC. Here I will use the [H2 Database](http://www.h2database.com/).
 
-Try running on the sbt console by copying the following code examples. Please note that the content of this book is available on GitHub, which you can also refer to;
+Try running the following code examples by copying and pasting on the sbt console. Note: all the contents in this book are available on GitHub. Check them here:
 
 [Https://github.com/scalikejdbc/scalikejdbc-cookbook](https://github.com/scalikejdbc/scalikejdbc-cookbook)
 
 ### Initializing a connection pool
 
-Firstly, here is how to load the JDBC driver and initialize a connection pool.
+Firstly, here is how to load a JDBC driver and initialize a connection pool.
 
     import scalikejdbc._
     Class.forName("org.h2.Driver")
@@ -18,7 +18,7 @@ Firstly, here is how to load the JDBC driver and initialize a connection pool.
 
 ### Executing DDL
 
-We don't have a table yet, so create a `members` table by running the following. If no exception occurs, we have successfully created a table.
+There are no tables in the database yet. Let's create a table named `members` by running the following example. If no exception occurs, we have successfully created the table.
 
     DB autoCommit { implicit session =>
       SQL("""
@@ -34,9 +34,9 @@ We don't have a table yet, so create a `members` table by running the following.
 
 ### Meaning of implicit session
 
-Here we saw something like `{implicit session => }`. This might confuse some of you who are not familiar with Scala because the variable `session` does not seem to be used anywhere else. I will briefly explain this.
+Here we saw `{implicit session => }`, which might confuse you if you are not familiar with Scala because the variable `session` does not seem to be used anywhere else. I will briefly explain this.
 
-Firstly, `DB.autoCommit[A](...)` is a method that takes a function of type `(DBSession) => A` as its argument. It's normally called in this manner;
+Firstly, `DB.autoCommit[A](...)` is a method that takes a function of type `(DBSession) => A` as its first argument. It's normally called in this manner;
 
     DB autoCommit { session =>
     }
@@ -52,7 +52,7 @@ is equivalent to the following;
      implicit val _session: DBSession = session
     }
 
-So why did `session` have to be an implicit paramter? That's because the `apply` method as in `SQL("...").execute.apply()` we saw in the DB block implicitly expects a `DBSession` type parameter.
+The reason that the `session` should be an implicit parameter there is that the `apply` method of `SQL("...").execute.apply()` in the DB block implicitly expects a `DBSession` type parameter.
 
 Instead, a compile-time error occurs if you call the SQL execution part without the `implicit` like this;
 
@@ -77,12 +77,12 @@ Implicit parameters in Scala are passed as the last parameter list of a curried 
 
     def apply()(implicit session: DBSession): Boolean
 
-By the way, you can name the implicit parameter freely as long as it is unique in its scope, so there is no problem to write it simply as `implicit s =>`. From this point in this book, I may also write as `{implicit s =>}`.
+By the way, you can name the implicit parameter freely as long as it is unique in its scope, so there is no problem to write it simply as `implicit s =>`. You might actually see `{implicit s =>}` sometimes in this book.
 
 
 ### Executing DML
 
-If no exception occured in the previous `create table`, a table should have been created already. Let's issue a `select` statement to the `members` table.
+If no exception occured in the previous `create table`, a table should have been created already. Let's execute a `select` statement to the `members` table.
 
     val members: List[Map[String, Any]] = DB readOnly { implicit session =>
       SQL("select * from members").map(rs => rs.toMap).list.apply()
@@ -121,22 +121,22 @@ as well as the executable template where you write binding variables in the comm
       .bindByName('name -> name, 'birthday -> None, 'createdAt -> createdAt)
       .update.apply()
 
-This is explained in more detail at the SQL template section in detail.
+These are explained in more detail in the SQL template section.
 
-Let's return to the example and issue the same `select` statement once again.
+Going back to the example, let's execute the same `select` query again.
 
     val members: List[Map[String, Any]] = DB readOnly { implicit session =>
       SQL("select * from members").map(_.toMap).list.apply()
     }
     // => members: List[Map[String,Any]] = List(Map(ID -> 1, NAME -> Alice, BIRTHDAY -> 1980-01-01, CREATED_AT -> 2012-12-31 00:02:09.247), Map(ID -> 2, NAME -> Bob, CREATED_AT -> 2012-12-31 00:02:09.247))
 
-The two records that was inserted has been returned as expected. You find that the previous `insert` was processed successfully.
+The two records are returned as you expected. You can tell that your `insert` operations have succeeded.
 
-Previously in the `select` examples, we obtained our results as `Map[String, Any]`, but let's change it so that the results are mapped to a `Member` class.
+In the previous `select` query examples, we obtained results as `Map[String, Any]` values. Let's rewrite them to map results to a class named `Member` now.
 
-ScalikeJDBC doesn't require you to do any special configuration to the class mapped from `ResultSet`. It is OK to simply define it as a `case class` or just as a regular `class`.
+ScalikeJDBC won't force you to do any special configuration to the class mapped from `ResultSet`. It is OK to simply define it as a `case class` or just as a regular `class`.
 
-It is recommended to define `NOT NULL` columns as `Option` types and use DateTime and LocalDate from [Joda Time](http://www.joda.org/joda-time/) for date and timestamp columns. The Date Time API of Java SE 8 can be used as well, but I will explain it separately. In this sample, I will show you an example of using Joda Time.
+It is recommended to define non-`NOT NULL` columns as `Option` types and use DateTime and LocalDate from [Joda Time](http://www.joda.org/joda-time/) for date and timestamp columns. The Date Time API of Java SE 8 can be used as well, but I will explain it separately. In this sample, I will show you an example of using Joda Time.
 
     case class Member(
       id: Long, 
@@ -160,7 +160,7 @@ It is recommended to define `NOT NULL` columns as `Option` types and use DateTim
 
 ### SQL Interpolation
 
-Since [String Interpolation (SIP-11)](http://docs.scala-lang.org/sips/pending/string-interpolation.html) was introduced to Scala 2.10.0, you can embed expressions to strings by `${...}`.
+[String Interpolation (SIP-11)](http://docs.scala-lang.org/sips/pending/string-interpolation.html) introduced in Scala 2.10.0 enables you to embed expressions surrounded by `${...}` into String literals.
 
 ScalikeJDBC offers an extension called "SQL interpolation" which takes advantage of this feature.
 
@@ -182,7 +182,7 @@ So let's try the SQL interpolation. Instead of writing like this as previously s
         .single.apply()
     }
 
-we can write it as below. Notice that it has also become simpler as passing binding variables by `#bindByName` being no longer there.
+we can alternatively write as below. It is much simpler now because we don't need to pass named variables by using `#bindByName` any more.
 
     def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
@@ -203,11 +203,11 @@ we can write it as below. Notice that it has also become simpler as passing bind
     }
 
 
-In the current ScalikeJDBC, the latter is the more recommended style over the direct use of `SQL("...")`. Subsequent chapters in this book basically shows code examples using SQL interpolation.
+Currently, I highly recommend you to choose this style over the direct use of `SQL("...")`. Subsequent chapters in this book basically shows code examples using SQL interpolation.
 
 ### QueryDSL
 
-QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten. This is a type-safe SQL builder. It will create an object of the above SQL interpolation.
+QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten. This is a type-safe SQL builder. It creates an object of the above SQL interpolation.
 
     import scalikejdbc._
     
@@ -240,9 +240,9 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
       }
     }
 
-In a glance, it looks like we have more code, but we have gotten rid of most of the parts where SQL were executed by strings.
+Although, at a glance, you may have a feeling that you need to write more code, notice that we've gotten rid of raw string values specified in the SQL statement.
 
-As a result, even a complex query, for example using joins, can become more DRY. If you develop a certain scale of applications, QueryDSL will enhance development efficiency.
+If you go with this style, complex join queries can be more DRY. When you develop applications of a certain size, using QueryDSL would make your development productive.
 
 ### Auto Macros
 
@@ -267,9 +267,9 @@ This way you can reduce boiler plate code.
 
 ## Conclusion
 
-That's it for a quick tour of ScalikeJDBC. I hope you got an image of how to use the library, although there are parts I could not cover.
+That's all for the quick tour of ScalikeJDBC. I hope you got an idea on how to use the library, although there are parts I could not cover.
 
-With its few implicit rules and symbolic descriptions, ScalikeJDBC makes it easy to understand by a first look. Also, it does not require many things to learn in order to master. What is needed as a prerequisite is a basic knowledge of Scala and JDBC.
+With its few implicit rules and symbolic expressions, ScalikeJDBC makes it easy to understand by a first look. Also, it does not require many things to learn in order to master. What is needed as a prerequisite is a basic knowledge of Scala and JDBC.
 
 Here I showed a sample to run SQL with ScalikeJDBC. I will go on with more detailed explanations about each of the features in the following sections.
 
