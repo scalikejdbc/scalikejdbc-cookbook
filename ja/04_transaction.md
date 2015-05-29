@@ -199,7 +199,7 @@ AutoSession は、select 文の場合は read-only、更新系の場合は auto-
 
 NamedDB の場合は NamedAutoSession(name) で同じように自動セッションを利用できます。
 
-    def create(name: String)(implicit session: DBSession = NamedDBSession('another)) = {
+    def create(name: String)(implicit session: DBSession = NamedAutoSession('another)) = {
       // ...
     }
 
