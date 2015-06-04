@@ -1,20 +1,20 @@
-# 3. 接続設定とコネクション管理
+# 3. Connection settings and management
 
-## コネクションプールの設定と使用方法
+## Using and configuring a connection pool
 
-ConnectionPool というオブジェクトに JDBC の設定を渡します。JDBC ドライバーの読み込みは自動で行われないので Class.forName(String) を呼び出してください。
+To use a connection pool, pass a set of JDBC settings to an object called `ConnectionPool`. `Class.forName(String)` needs to be called because the JDBC driver is not loaded automatically.
 
     import scalikejdbc._
     Class.forName("org.h2.Driver")
     ConnectionPool.singleton("jdbc:h2:mem:db", "username", "password")
 
-これで DB への接続設定は終了です。この処理以降であれば以下のように DB に接続することができます。
+This is all you need for the DB connection configuration. Once the above has been run, you can connect to the DB:
 
     val names: List[String] = DB readOnly { implicit session =>
       sql"select name from members".map(rs => rs.string("name")).list.apply()
     }
 
-なぜこれで接続設定が読み込まれるのでしょうか？それは DB.readOnly が内部的には以下のような処理をしているためです。
+The reason why the connection settings are applied here is because the `DB.readOnly` internally behaves like this:
 
     val names: List[String] = using(DB(ConnectionPool.borrow())) { db => 
       db.readOnly { implicit session => 
@@ -22,16 +22,16 @@ ConnectionPool というオブジェクトに JDBC の設定を渡します。JD
       }
     }
 
-毎回このような記述をしていては非常に冗長なので、上記のように DB.readOnly で書けるようになっているというわけです。
+As you can see, `DB.readOnly` can save you from writing such a verbose code every time.
 
-## 複数データソースへの接続
+## Connecting multiple data sources
 
-ScalikeJDBC では、一つのアプリケーションから複数のデータソースに接続したいというニーズに以下のようにして対応します。第一引数でデータソースの名前を指定します。型は Any ですが Symbol で指定することを推奨します。
+Below is an example of how to cope with the needs for connecting multiple data sources from a single application using ScalikeJDBC. The name of a data source must be specified in the first argument of the `add` method, whose type is actually `Any` but it is highly recommended to use a `Symbol`.
 
     ConnectionPool.add('db1, "jdbc:xxx:db1", "user", "pass")
     ConnectionPool.add('db2, "jdbc:xxx:db2", "user", "pass")
 
-使うときは「DB readOnly { implicit session => }」ではなく「NamedDB('db1) readOnly { implicit session => }」と記述します。
+To use them, write as `NamedDB ('db1) readOnly {implicit session =>}` instead of `DB readOnly {implicit session =>}`.
 
     NamedDB('db1) readOnly { implicit session =>
       // ...
@@ -41,39 +41,39 @@ ScalikeJDBC では、一つのアプリケーションから複数のデータ�
       // ...
     }
 
-上記の ConnectionPool.singleton(...) で指定されたデータソースには「'default」という名前がついています。別のデータソースにこの名前は使用できません。
+The data source created by the `ConnectionPool.singleton(...)` method earlier has the name `'default`. This name can not be used for other data sources.
 
 
-## その他のオプション設定
+## Optional settings
 
-JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSettings を使ってカスタマイズすることができます。
+Settings other than JDBC url, user name and password are customizable using the `ConnectionPoolSettings`.
 
     ConnectionPool.singleton("jdbc:h2:mem:db", "", "", 
       new ConnectionPoolSettings(initialSize = 20, maxSize = 50))
 
-設定の一覧は以下の通りです
+Here are the list of those settings:
 
 <table>
 <tr>
-<td>キー</td><td>内容</td>
+<td>Key</td><td>Content</td>
 </tr>
 <tr>
-<td>initialSize</td><td>プールするコネクション数の最小値</td>
+<td>initialSize</td><td>Minimum number of connections to be pooled</td>
 </tr>
 <tr>
-<td>maxSize</td><td>プールするコネクション数の最大値</td>
+<td>maxSize</td><td>Maximum number of connections to be pooled</td>
 </tr>
 <tr>
-<td>validationQuery</td><td>正常に接続できているか確認するための SQL</td>
+<td>validationQuery</td><td>SQL query to check to be connected</td>
 </tr>
 </table>
 
 
-## Commons DBCP 以外のコネクションプールを使う
+## Using a connection pool other than Commons DBCP
 
-上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 2.2.0 時点では標準では commons-dbcp、commons-dbcp2、BoneCP の実装を提供しています。
+The `ConnectionPool` method chooses [Commons DBCP](http://commons.apache.org/dbcp/) as the default implementation of the connection pool. Implementations that version 2.2.0 of ScalikeJDBC offers are: commons-dbcp, commons-dbcp2 and BoneCP.
 
-別のコネクションプールの実装を使いたいという場合は以下のようにして拡張することができます。
+If you prefer other connection pool implementations, you can do so like this:
 
     class MyConnectionPoolFactory extends ConnectionPoolFactory {
       def apply(url: String, user: String, password: String, settings: ConnectionPoolSettings) = {
@@ -83,7 +83,8 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
     
     ConnectionPool.add('xxxx, url, user, password)(new MyConnectionPoolFactory)
 
-また DataSource 経由で利用するコネクションプールを登録することもできます。以下は HikariCP の設定例です。
+You can also register the connection pool to be used through `DataSource`. The following is an example of using HikariCP.
+
 
 http://brettwooldridge.github.io/HikariCP/
 
@@ -97,15 +98,15 @@ http://brettwooldridge.github.io/HikariCP/
     }
     ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
 
-## スレッドローカルなコネクション
+## A thread-local connection
 
-スレッドローカルな値として DB クラスのインスタンスを使い回すことができます。DB インスタンスは java.sql.Connection を保持した値です。同じ DB インスタンスであれば同じコネクションを使用します。
+You can reuse an instance of the DB class, which holds `java.sql.Connection`, as a thread local value. As long as you use a single DB instance, the same connection will be reused.
 
     def init() = {
       val newDB = ThreadLocalDB.create(conn)
       newDB.begin()
     }
-    // init が呼び出された後で
+    // after `init` is called
     def action() = {
       val db = ThreadLocalDB.load()
       db readOnly { implicit session =>
@@ -116,6 +117,7 @@ http://brettwooldridge.github.io/HikariCP/
       try { ThreadLocalDB.load().close() } catch { case e: Exception => }
     }
 
-以上、コネクション管理について説明しました。トランザクション管理については次のセクションで解説します。
+That's it for the connection management. We will explain in the next section for transaction management.
+
 
 
