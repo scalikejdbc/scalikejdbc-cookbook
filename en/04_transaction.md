@@ -1,31 +1,31 @@
-# 4. DB ブロックとトランザクション
+# 4. DB blocks and transaction
 
-## DB ブロックの種類
+## Types of DB blocks
 
-ScalikeJDBC には 4 種類の DB ブロックがあります。
+There are four types of DB blocks in ScalikeJDBC.
 
 ### readOnly
 
-リードオンリーモードで実行します。select 文以外はすべて実行時に例外が発生します。
+It runs queries in the read-only mode. Execution of any non-select statements throw a run-time exception.
 
     val count: Long = DB readOnly { implicit session =>
       sql"select count(1) from members".map(_.long(1)).single.apply().get
     }
     
-    // java.sql.SQLException が発生する
+    // java.sql.SQLException occurs
     DB readOnly { implicit session =>
       sql"update members set name = ${"Alice"} where id = ${1}").update.apply()
     }
 
-デフォルトでないデータソースの場合は以下のように記述します。
+For a non-default data source, it needs to be written as follows:
 
     val name: Option[String] = NamedDB('legacydb) readOnly { implicit session =>
       sql"select name from members where id = ${"name"}".map(_.string("name")).single.apply()
     }
 
-自分でリソースの close まで面倒を見る必要がありますが DBSession を取り出して値として使用することもできます。
+You can also make a `DBSession` value and use it, although you must explicitly close the resource in that case.
 
-    // DBSession 型の暗黙のパラメータとしてリードオンリーなセッションを取得
+    // Get a read-only session as an implicit DBSession type parameter
     implicit val session: DBSession = DB.readOnlySession
     
     try {
@@ -36,7 +36,7 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
 
 ### autoCommit
 
-クエリや更新をオートコミットモードで実行します。
+It runs queries and updates in the auto-commit mode.
 
     val count = DB autoCommit { implicit session =>
       val updateMembers = SQL("update members set name = ? where id = ?")
@@ -50,71 +50,71 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
         .update.apply()
     }
 
-readOnlySession と同様に autoCommitSession もあります。
+Just like `readOnlySession`, there is `autoCommitSession` as well.
 
     implicit val session: DBSession = DB.autoCommitSession()
     implicit val session: DBSession = NamedDB('yetanother).autoCommitSession()
 
 ### localTx
 
-クエリや更新をブロックのスコープに閉じた同一トランザクションで実行します。ブロック内で例外が throw された場合、自動的にトランザクションはロールバックされます。
+It runs queries and updates in a single transaction enclosed in the scope of the block. The transaction is automatically rolled back If an exception is thrown in the block.
 
     val count = DB localTx { implicit session =>
-      // トランザクション開始
+      // start of a transaction
     
       val updateMembers = SQL("update members set name = ? where id = ?")
     
       updateMembers.bind("Alice", 1).update.apply() 
       updateMembers.bind("Bob", 2).update.apply() 
     
-      // トランザクション終了
+      // end of a transaction
     } 
-    // 途中で例外が発生したらすべてロールバックされる
+    // rolled back if an exception occurs
     
     NamedDB('yetanother) localTx { implicit session =>
       SQL("insert into events ..").bind(...).update.apply()
     }
 
-また、2.2.0 から TxBoundary という型クラスを指定することで例外以外のトランザクション境界をサポートするようになりました。
+Since version 2.2.0, the `TxBoundary` type class enables you to use transaction boundaries other than through an exception.
 
     import scalikejdbc._
     import scala.util.Try
     import scalikejdbc.TxBoundary.Try._
    
-    // Try が Failure だったら rollback されます
-    // この localTx 内から例外が投げられた場合も rollback します
+    // The transaction is rolled back if the Try ends up to be a Failure
+    // as well as when an exception is thrown in the localTx block
     val result: Try[Result] = DB localTx { implicit session =>
       Try { doSomeStaff() }
     }
 
-なお、localTx はトランザクションのスコープを明示するものなので DBSession を取り出して値として利用することはできません。
+Note that `localTx` cannot be taken out as a `DBSession` because it is a transaction boundary specifier.
 
 ### withinTx
 
-クエリや更新を既に存在しているトランザクション内で実行します。トランザクションについての操作はすべてライブラリ利用者によって制御される必要があります。
+It runs queries and updates as a part of an existing transaction. The library user is responsible for managing transactional operations.
 
     using(DB(ConnectionPool.borrow())) { db =>
       try {
-        db.begin() // トランザクションの開始
+        db.begin() // start of a transaction
     
         val names = DB withinTx { implicit session => 
-          // トランザクションが開始されていない場合 IllegalStateException が throw される
+          // an IllegalStateException is thrown unless a transaction is already started
           sql"select name from members".map(_.string("name")).list.apply()
         }
     
-        db.commit() // トランザクションをコミット
+        db.commit() // commit a transaction
       } catch { case e: Exception =>
-        db.rollback() // 例外が throw される可能性がある
-        db.rollbackIfActive() // 例外が throw される可能性はない
+        db.rollback() // an exception could be thrown
+        db.rollbackIfActive() // no exceptions can be thrown
         throw e
       }
     } 
 
-## 自動セッションを活用したトランザクション管理
+## Transaction management using an automatic session
 
-ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、クラスがあります。これらの活用方法について解説します。
+There is an object in ScalikeJDBC called `AutoSession` and a class called `NamedAutoSession`. I will explain how to use them.
 
-まず、以下のような insert 処理があるとします。
+Let's say you have an insert statement such as the following:
 
     object Member {
       def create(name: String, birthday: Option[LocalDate]): Member = {
@@ -129,9 +129,9 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
     
     val alice: Memebr = Member.create("Alice", None)
 
-これはこれで正常に動作はしますが、この create メソッドの中でトランザクションが閉じてしまっています。
+This will work fine by itself, but the problem is that transaction is closed in this `create` method.
 
-例えば、以下のような処理を書いた場合に NotFoundException が throw されても Member.create はロールバックされません。これは意図する挙動ではないはずです。
+What that means is that if you write a block like below, the `Member.create` would not be rolled back even when a `NotFoundException` was thrown. This should not be an intended behavior.
 
     DB localTx { implicit session =>
       val member = Member.create("Alice", None)
@@ -139,11 +139,11 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
         GroupMember.create(group.id, member.id)
       } orElse {
         throw new NotFoundException
-        // Member.create は別トランザクションでコミット済、ロールバックされない
+        // Member.create is not rolled back because it's already commit in another transaction
       }
     }
 
-そこで Member.create を暗黙のパラメータとして DBSession 型を受け取るよう書き換えます。メソッドの中で DB ブロックがなくなりましたが DBSession を暗黙のパラメータとして受け取って SQL を発行するようになりました。
+Rewriting the `Member.create` to receive a `DBSession` type as an implicit parameter gets rid of the DB block.
 
     object Member {
     
@@ -155,19 +155,19 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
       }
     }
 
-これで外側で有効になっていた暗黙のパラメータとしての DBSession 型を受け取ることができるようになるので、同一トランザクションで処理ができるようになります。
+It is now possible to run such methods in a single transaction by implicitly passing a `DBSession` from outside.
 
     DB localTx { implicit session =>
-      val member = Member.create("Alice", None) // 同一トランザクションで処理
+      val member = Member.create("Alice", None) // handled in the same transaction
       Group.findByName("Japan Scala Users Group") map { group =>
         GroupMember.create(group.id, member.id)
       } orElse {
         throw new NotFoundException
-        // Member.create がロールバックされる
+        // Member.create is rolled back
       }
     }
 
-しかし、まだ問題が残っています。このままだと Member.create 単体で実行ができないので、必ず DB ブロックで囲む必要があります。
+However, we still have a problem. The `Member.create` cannot be called individually any more, but has to be placed within a DB block.
 
     scala> Member.create("Chris", None)
     <console>:18: error: could not find implicit value for parameter session: scalikejdbc.DBSession
@@ -179,32 +179,33 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
          | }
     res5: Member = Member(3,Chris,None,None,2012-12-31T11:37:40.349+09:00)
 
-この問題への解が AutoSession です。Member.create をさらに以下のように書き換えて暗黙のパラメータのデフォルト値に AutoSession オブジェクトを指定します。
+`AutoSession` is a solution to this problem. All you need to do is to further modify the `Member.create` and make `AutoSession` object the default value of the implicit parameter.
 
     object Member {
     
       def create(name: String, birthday: Option[LocalDate])
         (implicit session: DBSession = AutoSession): Member = {
     
-        // 処理内容は同様
+        // same as before
       }
     }
 
-これで DB ブロックなしで Member.create を呼び出すことができるようになりました。
+And voilà! You can call the `Member.create` without a DB block.
 
     scala> Member.create("Chris", None)
     res5: Member = Member(3,Chris,None,None,2012-12-31T11:37:40.349+09:00)
 
-AutoSession は、select 文の場合は read-only、更新系の場合は auto-commit として新しいセッションをスタートして実行します。AutoSession はあくまでデフォルト値なので、もし外部から DBSession が渡された場合はそちらが優先されます。
+`AutoSession` starts a read-only session for a select statement, and an auto-commit session for update statements. Of course, a `DBSession` passed from outside is used over the `AutoSession` because it's only a default value.
 
-NamedDB の場合は NamedAutoSession(name) で同じように自動セッションを利用できます。
+Similarly, `NamedAutoSession(name)` can be used in the case of `NamedDB`.
 
     def create(name: String)(implicit session: DBSession = NamedAutoSession('another)) = {
       // ...
     }
 
-DB からソースコードを自動生成する mapper-generator（後述）は、この AutoSession を使用するソースコードを生成します。
+Mapper-generator, an automatic code generator from a DB which I will explain in a later chapter, generates source code using this `AutoSession`.
 
-以上、DB ブロックとトランザクション管理について解説しました。
+That's it for the DB blocks and the transaction management.
+
 
 
