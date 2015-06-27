@@ -6,7 +6,7 @@ There are four types of DB blocks in ScalikeJDBC.
 
 ### readOnly
 
-It runs queries in the read-only mode. Execution of any non-select statements throw a run-time exception.
+It runs queries in read-only mode. If a non-SELECT statement is issued in this mode, ScalikeJDBC throws a runtime exception.
 
     val count: Long = DB readOnly { implicit session =>
       sql"select count(1) from members".map(_.long(1)).single.apply().get
@@ -17,7 +17,7 @@ It runs queries in the read-only mode. Execution of any non-select statements th
       sql"update members set name = ${"Alice"} where id = ${1}").update.apply()
     }
 
-For a non-default data source, it needs to be written as follows:
+For a non-default datasource, it needs to be written as follows:
 
     val name: Option[String] = NamedDB('legacydb) readOnly { implicit session =>
       sql"select name from members where id = ${"name"}".map(_.string("name")).single.apply()
@@ -36,7 +36,7 @@ You can also make a `DBSession` value and use it, although you must explicitly c
 
 ### autoCommit
 
-It runs queries and updates in the auto-commit mode.
+It runs queries and update operations in auto-commit mode.
 
     val count = DB autoCommit { implicit session =>
       val updateMembers = SQL("update members set name = ? where id = ?")
@@ -57,7 +57,7 @@ Just like `readOnlySession`, there is `autoCommitSession` as well.
 
 ### localTx
 
-It runs queries and updates in a single transaction enclosed in the scope of the block. The transaction is automatically rolled back If an exception is thrown in the block.
+It runs queries and update operations in a single transaction enclosed in the scope of the block. The transaction is automatically rolled back if some exception is thrown from the block.
 
     val count = DB localTx { implicit session =>
       // start of a transaction
@@ -75,7 +75,7 @@ It runs queries and updates in a single transaction enclosed in the scope of the
       SQL("insert into events ..").bind(...).update.apply()
     }
 
-Since version 2.2.0, the `TxBoundary` type class enables you to use transaction boundaries other than through an exception.
+Since version 2.2.0, the `TxBoundary` type class allows you to choose transaction boundaries other than through an exception.
 
     import scalikejdbc._
     import scala.util.Try
@@ -91,7 +91,7 @@ Note that `localTx` cannot be taken out as a `DBSession` because it is a transac
 
 ### withinTx
 
-It runs queries and updates as a part of an existing transaction. The library user is responsible for managing transactional operations.
+It runs queries and update operations within an existing transaction. You are responsible for handling the transaction and manage the datasource by yourself.
 
     using(DB(ConnectionPool.borrow())) { db =>
       try {
@@ -112,7 +112,7 @@ It runs queries and updates as a part of an existing transaction. The library us
 
 ## Transaction management using an automatic session
 
-There is an object in ScalikeJDBC called `AutoSession` and a class called `NamedAutoSession`. I will explain how to use them.
+I will explain how to use the `AutoSession` object and the `NamedAutoSession` class here.
 
 Let's say you have an insert statement such as the following:
 
@@ -129,7 +129,7 @@ Let's say you have an insert statement such as the following:
     
     val alice: Memebr = Member.create("Alice", None)
 
-This will work fine by itself, but the problem is that transaction is closed in this `create` method.
+This will work fine by itself, but the problem is that the transaction is confined in this `create` method.
 
 What that means is that if you write a block like below, the `Member.create` would not be rolled back even when a `NotFoundException` was thrown. This should not be an intended behavior.
 
