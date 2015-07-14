@@ -168,14 +168,14 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
 
 早速 SQL インターポレーションを使ってみましょう。これまでこのように書いていたものが
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
         .bindByName('name -> name, 'birthday -> birthday)
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
 
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
         .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
@@ -184,13 +184,13 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
 
 このように書けるようになります。#bindByName でバインド引数を名前指定していた箇所が不要になり、非常にシンプルになりました。
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
     
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       sql"select id, name, birthday from members where id = ${id}"
         .map { rs => 
           new Member(
@@ -216,7 +216,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
       override tableName = "members"
       override columnNames = Seq("id", "name", "birthday")
       
-      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
         val id = withSQL { 
           insert.into(Member).namedValues(
             column.name -> name,
@@ -226,7 +226,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
         Member(id, name, birthday)
       }
       
-      def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+      def find(id: Long)(implicit session: DBSession): Option[Member] = {
         val m = Member.syntax("m")
         withSQL { select.from(Member as m).where.eq(m.id, id) }
           .map { rs => 
@@ -256,7 +256,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
     def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
     
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       val m = Member.syntax("m")
       withSQL { select.from(Member as m).where.eq(m.id, id) }
         .map(rs => extract(rs, m))
