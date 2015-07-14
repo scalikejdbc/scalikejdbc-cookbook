@@ -168,14 +168,14 @@ While there is a risk of causing an SQL injection vulnerability in misuse of `SQ
 
 So let's try the SQL interpolation. Instead of writing like this as previously seen:
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
         .bindByName('name -> name, 'birthday -> birthday)
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
 
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
         .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
@@ -184,13 +184,13 @@ So let's try the SQL interpolation. Instead of writing like this as previously s
 
 we can alternatively write as below. It is much simpler now because we don't need to pass named variables by using `#bindByName` any more.
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
     
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       sql"select id, name, birthday from members where id = ${id}"
         .map { rs => 
           new Member(
@@ -216,7 +216,7 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
       override tableName = "members"
       override columnNames = Seq("id", "name", "birthday")
       
-      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSesion): Member = {
+      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
         val id = withSQL { 
           insert.into(Member).namedValues(
             column.name -> name,
@@ -226,7 +226,7 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
         Member(id, name, birthday)
       }
       
-      def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+      def find(id: Long)(implicit session: DBSession): Option[Member] = {
         val m = Member.syntax("m")
         withSQL { select.from(Member as m).where.eq(m.id, id) }
           .map { rs => 
@@ -256,7 +256,7 @@ you can write yet more concisely with the `autoConstruct` method as below:
 
     def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
     
-    def find(id: Long)(implicit session: DBSesion): Option[Member] = {
+    def find(id: Long)(implicit session: DBSession): Option[Member] = {
       val m = Member.syntax("m")
       withSQL { select.from(Member as m).where.eq(m.id, id) }
         .map(rs => extract(rs, m))
