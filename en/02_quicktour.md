@@ -149,7 +149,7 @@ It is recommended to define non-`NOT NULL` columns as `Option` types and use Dat
       id = rs.long("id"), 
       name = rs.string("name"), 
       description = rs.stringOpt("description"),
-      birthday = rs.dateOpt("birthday").map(_.toLocalDate), 
+      birthday = rs.jodaLocalDateOpt("birthday"),
       createdAt = rs.jodaDateTime("created_at")
     )
     
@@ -178,7 +178,7 @@ So let's try the SQL interpolation. Instead of writing like this as previously s
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
-        .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaDateTimeOpt("birthday") }
         .single.apply()
     }
 
@@ -196,7 +196,7 @@ we can alternatively write as below. It is much simpler now because we don't nee
           new Member(
             id       = rs.long("id"), 
             name     = rs.string("name"), 
-            birthday = rs.timestampOpt("birthday").map(_.toDateTime) 
+            birthday = rs.jodaDateTimeOpt("birthday")
           )
         }
         .single.apply()

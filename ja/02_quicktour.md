@@ -149,7 +149,7 @@ ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設
       id = rs.long("id"), 
       name = rs.string("name"), 
       description = rs.stringOpt("description"),
-      birthday = rs.dateOpt("birthday").map(_.toLocalDate), 
+      birthday = rs.jodaLocalDateOpt("birthday"),
       createdAt = rs.jodaDateTime("created_at")
     )
     
@@ -178,7 +178,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
-        .map { rs => Member(rs.long("id"), rs.string("name"), rs.timestampOpt("birthday").map(_.toDateTime) }
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaDateTimeOpt("birthday") }
         .single.apply()
     }
 
@@ -196,7 +196,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
           new Member(
             id       = rs.long("id"), 
             name     = rs.string("name"), 
-            birthday = rs.timestampOpt("birthday").map(_.toDateTime) 
+            birthday = rs.jodaDateTimeOpt("birthday")
           )
         }
         .single.apply()
