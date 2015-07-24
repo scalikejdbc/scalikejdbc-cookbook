@@ -30,7 +30,7 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
     # 生成するクラスを配置するパッケージ
     generator.packageName=models
     # ソースコードの改行コード: LF/CRLF
-    geneartor.lineBreak=LF
+    generator.lineBreak=LF
     # テンプレート: basic/namedParameters/executable/interpolation/queryDsl
     generator.template=queryDsl
     # テストのテンプレート: specs2unit/specs2acceptance/ScalaTestFlatSpec
