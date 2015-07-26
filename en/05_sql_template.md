@@ -106,7 +106,7 @@ Let's look at this example.
       .map(rs => (Member(rs.long("m_id"), rs.long("m_tid")), Team(rs.long("t_id"), rs.string("t_name"))))
       .list.apply()
 
-To rewriting this by using SQLSyntaxSupport, prepare some definitions;
+To rewrite this by using SQLSyntaxSupport, prepare some definitions;
 
     case class Member(id: Long, teamId: Long)
     case class Team(id: Long, name: String)
@@ -122,7 +122,7 @@ To rewriting this by using SQLSyntaxSupport, prepare some definitions;
       }
     }
 
-The query part can then written as follows;
+The query part can then be written as follows;
 
     val (m, t) = (Member.syntax("m"), Team.syntax("t"))
     val membersWithTeam: List[(Member, Team)] = sql"""
@@ -132,7 +132,7 @@ The query part can then written as follows;
       .map(implicit rs => (Member(m.resultName), Team(t.resultName)))
       .list.apply()
 
-`#syntax(String)` returns a SyntaxProvider. They can be cached and reused because they are thread safe. SyntaxProvider is expanded into SQLSyntax with field names of the class passed as the type parameter.
+`#syntax(String)` returns a SyntaxProvider, which can be cached and reused because they are thread safe. SyntaxProvider is expanded into SQLSyntax with field names of the class passed as the type parameter.
 
 You may find it vaguely similar to JPQL if you know about it. Unlike JPQL, however, there is no custom syntax apart from SQL because the embedded fields are all checked at compile time, and they are just expanded into strings.
 
