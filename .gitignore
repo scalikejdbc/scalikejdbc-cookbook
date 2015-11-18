@@ -65,3 +65,23 @@ sbt
 
 scalikejdbc-cookbook-ja.html
 scalikejdbc-cookbook-ja.epub
+### https://raw.github.com/github/gitignore/23aad6abc4ed1aafb425f6e09334c4e35ad146ac/gitbook.gitignore
+
+# Node rules:
+## Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+## Dependency directory
+## Commenting this out is preferred by some people, see
+## https://docs.npmjs.com/misc/faq#should-i-check-my-node_modules-folder-into-git
+node_modules
+
+# Book build output
+_book
+
+# eBook build output
+*.epub
+*.mobi
+*.pdf
+
+

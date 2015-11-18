@@ -1,0 +1,2 @@
+* [Japanese](ja/)
+* [English](en/)
