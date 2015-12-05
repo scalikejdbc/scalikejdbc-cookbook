@@ -95,7 +95,7 @@ ScalikeJDBC では nullable な値を考慮して Option 型をバインド引�
 
     DB autoCommit { implicit s =>
       val (name, memo, createdAt) = ("Alice", Some("Wonderland"), org.joda.DateTime.now)
-      sql"insert into members values (${name}, ${memo}, ${createdAt})")
+      sql"insert into members values (${name}, ${memo}, ${createdAt})"
         .update.apply()
     }
 
