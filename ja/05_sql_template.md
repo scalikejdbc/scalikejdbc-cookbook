@@ -117,8 +117,8 @@ SQLSyntaxSupport という trait を使うと特に join クエリでの SQL イ
       }
     }
     object Team extends SQLSyntaxSupport[Team] {
-      def apply(m: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
-        new Team(id = rs.long(m.id), name = rs.long(m.name))
+      def apply(t: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
+        new Team(id = rs.long(t.id), name = rs.string(t.name))
       }
     }
 
