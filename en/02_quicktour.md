@@ -168,7 +168,7 @@ While there is a risk of causing an SQL injection vulnerability in misuse of `SQ
 
 So let's try the SQL interpolation. Instead of writing like this as previously seen:
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+    def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
         .bindByName('name -> name, 'birthday -> birthday)
         .updateAndReturnGeneratedKey.apply()
@@ -178,13 +178,13 @@ So let's try the SQL interpolation. Instead of writing like this as previously s
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
-        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaDateTimeOpt("birthday") }
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaLocalDateOpt("birthday") }
         .single.apply()
     }
 
 we can alternatively write as below. It is much simpler now because we don't need to pass named variables by using `#bindByName` any more.
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+    def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
@@ -196,7 +196,7 @@ we can alternatively write as below. It is much simpler now because we don't nee
           new Member(
             id       = rs.long("id"), 
             name     = rs.string("name"), 
-            birthday = rs.jodaDateTimeOpt("birthday")
+            birthday = rs.jodaLocalDateOpt("birthday")
           )
         }
         .single.apply()
@@ -211,12 +211,12 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
 
     import scalikejdbc._
     
-    case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
+    case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
       override tableName = "members"
       override columnNames = Seq("id", "name", "birthday")
       
-      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+      def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
         val id = withSQL { 
           insert.into(Member).namedValues(
             column.name -> name,
