@@ -168,7 +168,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
 
 早速 SQL インターポレーションを使ってみましょう。これまでこのように書いていたものが
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+    def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
       val id = SQL("insert into members (name, birthday) values ({name}, {birthday})")
         .bindByName('name -> name, 'birthday -> birthday)
         .updateAndReturnGeneratedKey.apply()
@@ -178,13 +178,13 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       SQL("select id, name, birthday from members where id = {id}")
         .bindByName('id -> id)
-        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaDateTimeOpt("birthday") }
+        .map { rs => Member(rs.long("id"), rs.string("name"), rs.jodaLocalDateOpt("birthday") }
         .single.apply()
     }
 
 このように書けるようになります。#bindByName でバインド引数を名前指定していた箇所が不要になり、非常にシンプルになりました。
 
-    def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+    def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
       val id = sql"insert into members (name, birthday) values (${name}, ${birthday})"
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
@@ -196,7 +196,7 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
           new Member(
             id       = rs.long("id"), 
             name     = rs.string("name"), 
-            birthday = rs.jodaDateTimeOpt("birthday")
+            birthday = rs.jodaLocalDateOpt("birthday")
           )
         }
         .single.apply()
@@ -211,12 +211,12 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
 
     import scalikejdbc._
     
-    case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
+    case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
       override tableName = "members"
       override columnNames = Seq("id", "name", "birthday")
       
-      def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+      def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
         val id = withSQL { 
           insert.into(Member).namedValues(
             column.name -> name,
