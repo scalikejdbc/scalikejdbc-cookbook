@@ -213,8 +213,8 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
     
     case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
-      override tableName = "members"
-      override columnNames = Seq("id", "name", "birthday")
+      override val tableName = "members"
+      override val columnNames = Seq("id", "name", "birthday")
       
       def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
         val id = withSQL { 
