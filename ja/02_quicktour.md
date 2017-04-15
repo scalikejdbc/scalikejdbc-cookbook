@@ -213,8 +213,8 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
     
     case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
-      override tableName = "members"
-      override columnNames = Seq("id", "name", "birthday")
+      override val tableName = "members"
+      override val columnNames = Seq("id", "name", "birthday")
       
       def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
         val id = withSQL { 
