@@ -11,7 +11,7 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
     val count: Long = DB readOnly { implicit session =>
       sql"select count(1) from members".map(_.long(1)).single.apply().get
     }
-    
+
     // java.sql.SQLException が発生する
     DB readOnly { implicit session =>
       sql"update members set name = ${"Alice"} where id = ${1}").update.apply()
@@ -27,10 +27,10 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
 
     // DBSession 型の暗黙のパラメータとしてリードオンリーなセッションを取得
     implicit val session: DBSession = DB.readOnlySession
-    
+
     try {
       val names: List[String] = sql"select * from members".map(_.string("name")).list.apply()
-    } finally { 
+    } finally {
       session.close()
     }
 
@@ -40,11 +40,11 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
 
     val count = DB autoCommit { implicit session =>
       val updateMembers = SQL("update members set name = ? where id = ?")
-    
+
       updateMembers.bind("Alice", 1).update.apply() // auto-commit
       updateMembers.bind("Bob", 2).update.apply() // auto-commit
     }
-    
+
     NamedDB('yetanother) autoCommit { implicit session =>
       sql"insert into events values (${12345}, ${"Click"}, ${"{'user_id': 345, 'url': 'http://www.example.com/xxx'}"})"
         .update.apply()
@@ -61,16 +61,16 @@ readOnlySession と同様に autoCommitSession もあります。
 
     val count = DB localTx { implicit session =>
       // トランザクション開始
-    
+
       val updateMembers = SQL("update members set name = ? where id = ?")
-    
-      updateMembers.bind("Alice", 1).update.apply() 
-      updateMembers.bind("Bob", 2).update.apply() 
-    
+
+      updateMembers.bind("Alice", 1).update.apply()
+      updateMembers.bind("Bob", 2).update.apply()
+
       // トランザクション終了
-    } 
+    }
     // 途中で例外が発生したらすべてロールバックされる
-    
+
     NamedDB('yetanother) localTx { implicit session =>
       SQL("insert into events ..").bind(...).update.apply()
     }
@@ -80,7 +80,7 @@ readOnlySession と同様に autoCommitSession もあります。
     import scalikejdbc._
     import scala.util.Try
     import scalikejdbc.TxBoundary.Try._
-   
+
     // Try が Failure だったら rollback されます
     // この localTx 内から例外が投げられた場合も rollback します
     val result: Try[Result] = DB localTx { implicit session =>
@@ -96,19 +96,19 @@ readOnlySession と同様に autoCommitSession もあります。
     using(DB(ConnectionPool.borrow())) { db =>
       try {
         db.begin() // トランザクションの開始
-    
-        val names = DB withinTx { implicit session => 
+
+        val names = DB withinTx { implicit session =>
           // トランザクションが開始されていない場合 IllegalStateException が throw される
           sql"select name from members".map(_.string("name")).list.apply()
         }
-    
+
         db.commit() // トランザクションをコミット
       } catch { case e: Exception =>
         db.rollback() // 例外が throw される可能性がある
         db.rollbackIfActive() // 例外が throw される可能性はない
         throw e
       }
-    } 
+    }
 
 ## 自動セッションを活用したトランザクション管理
 
@@ -126,7 +126,7 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
         new Member(id = id, name = name, birthday = birthday, createdAt = createdAt)
       }
     }
-    
+
     val alice: Memebr = Member.create("Alice", None)
 
 これはこれで正常に動作はしますが、この create メソッドの中でトランザクションが閉じてしまっています。
@@ -146,7 +146,7 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
 そこで Member.create を暗黙のパラメータとして DBSession 型を受け取るよう書き換えます。メソッドの中で DB ブロックがなくなりましたが DBSession を暗黙のパラメータとして受け取って SQL を発行するようになりました。
 
     object Member {
-    
+
       def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
         val createdAt = DateTime.now
         val id: Long = sql"insert into members (name, birthday, created_at) values (${name}, ${birthday}, ${createdAt})"
@@ -173,7 +173,7 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
     <console>:18: error: could not find implicit value for parameter session: scalikejdbc.DBSession
                   Member.create("Chris", None)
                                ^
-    
+
     scala> DB autoCommit { implicit session =>
          |   Member.create("Chris", None)
          | }
@@ -182,10 +182,10 @@ ScalikeJDBC には AutoSession、NamedAutoSession というオブジェクト、
 この問題への解が AutoSession です。Member.create をさらに以下のように書き換えて暗黙のパラメータのデフォルト値に AutoSession オブジェクトを指定します。
 
     object Member {
-    
+
       def create(name: String, birthday: Option[LocalDate])
         (implicit session: DBSession = AutoSession): Member = {
-    
+
         // 処理内容は同様
       }
     }
@@ -206,5 +206,3 @@ NamedDB の場合は NamedAutoSession(name) で同じように自動セッショ
 DB からソースコードを自動生成する mapper-generator（後述）は、この AutoSession を使用するソースコードを生成します。
 
 以上、DB ブロックとトランザクション管理について解説しました。
-
-

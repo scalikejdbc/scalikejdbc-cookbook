@@ -6,13 +6,13 @@ ScalikeJDBC を使った Scala のプロジェクトの始め方について簡�
 
 Scala 自体は JVM 上で動作するため JDK が必要です。もしインストールされていない場合はインストールしておいてください。
 
-## sbt 
+## sbt
 
 sbt は Scala でデファクトスタンダードになっているビルドツールです。
 
 [http://www.scala-sbt.org/](http://www.scala-sbt.org/)
 
-sbt の起動自体は sbt-launch.jar を java コマンドで起動するだけですが、Mac ユーザの方は MacPorts や 
+sbt の起動自体は sbt-launch.jar を java コマンドで起動するだけですが、Mac ユーザの方は MacPorts や
 
     port install sbt
 
@@ -31,13 +31,13 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
 
 ここに build.sbt というファイルを作成して以下のような内容を記述してください。
 
-    scalaVersion := "2.11.6"
+    scalaVersion := "2.12.2"
 
     libraryDependencies ++= Seq(
-      "org.scalikejdbc"  %% "scalikejdbc"  % "2.2.+",
+      "org.scalikejdbc"  %% "scalikejdbc"  % "3.0.+",
       "org.slf4j"        %  "slf4j-simple" % "1.7.+",
       "com.h2database"   %  "h2"           % "1.4.+",
-      "org.specs2"       %% "specs2-core"  % "2.4.9" % "test"
+      "org.scalatest"    %% "scalatest"    % "3.0.+" % "test"
     )
 
 この状態で sbt console を起動してください。 scalikejdbc という package が import できるようになっていれば OK です。
@@ -60,4 +60,3 @@ Windows や Linux ユーザの方は公式サイトから zip ファイルなど
     $
 
 　これで準備が整ったので、次のセクションからは実際に ScalikeJDBC を使ったコードを試してみましょう。
-

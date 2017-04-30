@@ -97,7 +97,7 @@ Scala の暗黙のパラメータは、カリー化されたメソッドの最�
     DB localTx { implicit session =>
       val insertSql = SQL("insert into members (name, birthday, created_at) values (?, ?, ?)")
       val createdAt = DateTime.now
-    
+
       insertSql.bind("Alice", Option(new LocalDate("1980-01-01")), createdAt).update.apply()
       insertSql.bind("Bob", None, createdAt).update.apply()
     }
@@ -113,8 +113,8 @@ Scala の暗黙のパラメータは、カリー化されたメソッドの最�
 
     SQL("""
       insert into members (name, birthday, created_at) values (
-        /*'name*/'Alice', 
-        /*'birthday*/'1980-01-01', 
+        /*'name*/'Alice',
+        /*'birthday*/'1980-01-01',
         /*'createdAt*/current_timestamp
       )
       """)
@@ -139,20 +139,20 @@ ScalikeJDBC では ResultSet からマッピングするクラスに特殊な設
 また、NOT NULL でないカラムは Option 型として定義し、日付やタイムスタンプ型には [Joda Time](http://www.joda.org/joda-time/) の DateTime、LocalDate を使うことを推奨します。Java SE 8 の Date Time API も利用可能ですが、それについては別途説明します。まずは以下のサンプルで Joda Time を使った具体例を示します。
 
     case class Member(
-      id: Long, 
-      name: String, 
-      description: Option[String] = None, 
-      birthday: Option[LocalDate] = None, 
+      id: Long,
+      name: String,
+      description: Option[String] = None,
+      birthday: Option[LocalDate] = None,
       createdAt: DateTime)
-    
+
     val allColumns = (rs: WrappedResultSet) => Member(
-      id = rs.long("id"), 
-      name = rs.string("name"), 
+      id = rs.long("id"),
+      name = rs.string("name"),
       description = rs.stringOpt("description"),
       birthday = rs.jodaLocalDateOpt("birthday"),
       createdAt = rs.jodaDateTime("created_at")
     )
-    
+
     val members: List[Member] = DB readOnly { implicit session =>
       SQL("select * from members limit 10").map(allColumns).list.apply()
     }
@@ -189,13 +189,13 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
-    
+
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       sql"select id, name, birthday from members where id = ${id}"
-        .map { rs => 
+        .map { rs =>
           new Member(
-            id       = rs.long("id"), 
-            name     = rs.string("name"), 
+            id       = rs.long("id"),
+            name     = rs.string("name"),
             birthday = rs.jodaLocalDateOpt("birthday")
           )
         }
@@ -210,14 +210,14 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
 1.6.0 から追加された QueryDSL という機能も忘れてはいけません。これはタイプセーフな SQL ビルダーです。上記の SQL インターポレーションのオブジェクトを生成します。
 
     import scalikejdbc._
-    
+
     case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
       override val tableName = "members"
       override val columnNames = Seq("id", "name", "birthday")
-      
+
       def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
-        val id = withSQL { 
+        val id = withSQL {
           insert.into(Member).namedValues(
             column.name -> name,
             column.birthday -> birthday
@@ -225,17 +225,17 @@ SQL("...") は使い方を誤ると SQL インジェクション脆弱性を引�
         }.updateAndReturnGeneratedKey.apply()
         Member(id, name, birthday)
       }
-      
+
       def find(id: Long)(implicit session: DBSession): Option[Member] = {
         val m = Member.syntax("m")
         withSQL { select.from(Member as m).where.eq(m.id, id) }
-          .map { rs => 
+          .map { rs =>
             new Member(
               // rs.long の代わりに rs.get[Long] で型推論することもできます
-              id       = rs.get(m.resultName.id), 
+              id       = rs.get(m.resultName.id),
               name     = rs.get(m.resultName.name),
               birthday = rs.get(m.resultName.birthday)
-            ) 
+            )
           }.single.apply()
       }
     }
@@ -250,12 +250,12 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
 さらに scalikejdbc-syntax-support-macro を使うと
 
-    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "2.2.+"
+    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.0.+"
 
 以下のように `autoConstruct` というメソッドで簡潔に書くこともできます。
 
     def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
-    
+
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       val m = Member.syntax("m")
       withSQL { select.from(Member as m).where.eq(m.id, id) }
@@ -272,5 +272,3 @@ http://scalikejdbc.org/documentation/auto-macros.html
 ScalikeJDBC は暗黙のルールや記号による記述が少なく、初見で何をやっているかわかりやすいという特徴があります。また、使いこなすために覚えることも多くありません。前提知識として必要なのは Scala と JDBC の基礎知識くらいです。
 
 ここではまず ScalikeJDBC で SQL を実行するサンプルを示しました。次のセクション以降で一つ一つの機能についてより詳細な説明をしていきます。
-
-

@@ -31,13 +31,13 @@ Make a project's root directory;
 
 Make a file named build.sbt with the content such as the following.
 
-    scalaVersion: = "2.11.6"
+    scalaVersion: = "2.12.2"
 
     libraryDependencies ++ = Seq (
-      "Org.scalikejdbc" %% "scalikejdbc"% "2.2.+ ",
-      "Org.slf4j"% "slf4j-simple"% "1.7.+ ",
-      "Com.h2database"% "h2"% "1.4.+ ",
-      "Org.specs2" %% "specs2-core"% "2.4.9"% "test"
+      "Org.scalikejdbc" %% "scalikejdbc"  % "3.0.+ ",
+      "Org.slf4j"       %  "slf4j-simple" % "1.7.+ ",
+      "Com.h2database"  %  "h2"           % "1.4.+ ",
+      "org.scalatest"   %% "scalatest"    % "3.0.+" % "test"
     )
 
 Start the sbt console. If all goes well, you can then import the scalikejdbc package.
