@@ -97,7 +97,7 @@ Now, let's try to insert some records. Since the part that starts with `SQL` doe
     DB localTx { implicit session =>
       val insertSql = SQL("insert into members (name, birthday, created_at) values (?, ?, ?)")
       val createdAt = DateTime.now
-    
+
       insertSql.bind("Alice", Option(new LocalDate("1980-01-01")), createdAt).update.apply()
       insertSql.bind("Bob", None, createdAt).update.apply()
     }
@@ -113,8 +113,8 @@ as well as the executable template where you write binding variables in the comm
 
     SQL("""
       insert into members (name, birthday, created_at) values (
-        /*'name*/'Alice', 
-        /*'birthday*/'1980-01-01', 
+        /*'name*/'Alice',
+        /*'birthday*/'1980-01-01',
         /*'createdAt*/current_timestamp
       )
       """)
@@ -139,20 +139,20 @@ ScalikeJDBC won't force you to do any special configuration to the class mapped 
 It is recommended to define non-`NOT NULL` columns as `Option` types and use DateTime and LocalDate from [Joda Time](http://www.joda.org/joda-time/) for date and timestamp columns. The Date Time API of Java SE 8 can be used as well, but I will explain it separately. In this sample, I will show you an example of using Joda Time.
 
     case class Member(
-      id: Long, 
-      name: String, 
-      description: Option[String] = None, 
-      birthday: Option[LocalDate] = None, 
+      id: Long,
+      name: String,
+      description: Option[String] = None,
+      birthday: Option[LocalDate] = None,
       createdAt: DateTime)
-    
+
     val allColumns = (rs: WrappedResultSet) => Member(
-      id = rs.long("id"), 
-      name = rs.string("name"), 
+      id = rs.long("id"),
+      name = rs.string("name"),
       description = rs.stringOpt("description"),
       birthday = rs.jodaLocalDateOpt("birthday"),
       createdAt = rs.jodaDateTime("created_at")
     )
-    
+
     val members: List[Member] = DB readOnly { implicit session =>
       SQL("select * from members limit 10").map(allColumns).list.apply()
     }
@@ -189,13 +189,13 @@ we can alternatively write as below. It is much simpler now because we don't nee
         .updateAndReturnGeneratedKey.apply()
       Member(id, name, birthday)
     }
-    
+
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       sql"select id, name, birthday from members where id = ${id}"
-        .map { rs => 
+        .map { rs =>
           new Member(
-            id       = rs.long("id"), 
-            name     = rs.string("name"), 
+            id       = rs.long("id"),
+            name     = rs.string("name"),
             birthday = rs.jodaLocalDateOpt("birthday")
           )
         }
@@ -210,14 +210,14 @@ Currently, I highly recommend you to choose this style over the direct use of `S
 QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten. This is a type-safe SQL builder. It creates an object of the above SQL interpolation.
 
     import scalikejdbc._
-    
+
     case class Member(id: Long, name: String, birthday: Option[LocalDate] = None)
     object Member extends SQLSyntaxSupport[Member] {
       override val tableName = "members"
       override val columnNames = Seq("id", "name", "birthday")
-      
+
       def create(name: String, birthday: Option[LocalDate])(implicit session: DBSession): Member = {
-        val id = withSQL { 
+        val id = withSQL {
           insert.into(Member).namedValues(
             column.name -> name,
             column.birthday -> birthday
@@ -225,17 +225,17 @@ QueryDSL is a feature that was added in 1.6.0 which also should not be forgotten
         }.updateAndReturnGeneratedKey.apply()
         Member(id, name, birthday)
       }
-      
+
       def find(id: Long)(implicit session: DBSession): Option[Member] = {
         val m = Member.syntax("m")
         withSQL { select.from(Member as m).where.eq(m.id, id) }
-          .map { rs => 
+          .map { rs =>
             new Member(
               // rs.get[Long] can be used with type inference instead of writing rs.long
-              id       = rs.get(m.resultName.id), 
+              id       = rs.get(m.resultName.id),
               name     = rs.get(m.resultName.name),
               birthday = rs.get(m.resultName.birthday)
-            ) 
+            )
           }.single.apply()
       }
     }
@@ -250,12 +250,12 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
 If you go even further, by using scalikejdbc-syntax-support-macro:
 
-    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "2.2.+"
+    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.0.+"
 
 you can write yet more concisely with the `autoConstruct` method as below:
 
     def extract(rs: WrappedResultSet, m: ResultName[Member]): Member = autoConstruct(rs, rn)
-    
+
     def find(id: Long)(implicit session: DBSession): Option[Member] = {
       val m = Member.syntax("m")
       withSQL { select.from(Member as m).where.eq(m.id, id) }
@@ -272,5 +272,3 @@ That's all for the quick tour of ScalikeJDBC. I hope you got an idea on how to u
 With its few implicit rules and symbolic expressions, ScalikeJDBC makes it easy to understand by a first look. Also, it does not require many things to learn in order to master. What is needed as a prerequisite is a basic knowledge of Scala and JDBC.
 
 Here I showed a sample to run SQL with ScalikeJDBC. I will go on with more detailed explanations about each of the features in the following sections.
-
-

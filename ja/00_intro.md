@@ -32,3 +32,14 @@ Scala のバージョンは 2.9.1 で String Interpolation がまだなかった
 
 2014 年 11 月 瀬良 和弘 (Kazuhiro Sera [@seratch](http://seratch.net/))
 
+# version 3 対応に添えて
+
+2017 年に ScalikeJDBC 3.0 をリリースすることができました。私が初めて Scala を使い始めたのは 2010 年で、早いもので 7 年以上経過したことになります。
+
+3.0 は Java 8 以上必須、JSR-310 モジュールの標準組み込み、Reactive Streams 対応が目玉の変更です。多くの方のコントリビュートをいただき、後方互換性を維持しながらライブラリを進化させることができていることを嬉しく思います。
+
+https://github.com/scalikejdbc/scalikejdbc/blob/master/notes/3.0.0.markdown
+
+今回、この Cookbook を ScalikeJDBC 3.0.0 に対応させるために更新しました。ScalikeJDBC をご利用いただいている皆様のお役に立てれば幸いです。
+
+2017 年 5 月 瀬良 和弘 (Kazuhiro Sera [@seratch](https://twitter.com/seratch)))

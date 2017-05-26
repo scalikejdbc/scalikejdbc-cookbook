@@ -1,10 +1,10 @@
-# 8. ユニットテスト
+# 8. Unit Testing
 
-このセクションでは、ScalikeJDBC を使ったプログラムのテストの例を示します。
+In this section, we will show you test code samples using ScalikeJDBC's testing support.
 
 ## scalikejdbc-test
 
-ScalaTest と specs2 にそれぞれ同等のサポート機能を提供するサブプロジェクトです。1.4.2 から提供が開始されました。
+scalikejdbc-test is a sub project which provides supports for both of ScalaTest and specs2. The feature is supported since ScalikeJDBC version 1.4.2.
 
     val appDependencies = Seq(
       "org.scalikejdbc"   %% "scalikejdbc"      % "3.0.+",
@@ -13,9 +13,9 @@ ScalaTest と specs2 にそれぞれ同等のサポート機能を提供する�
       "org.specs2"        %% "specs2-core"      % "3.8.9"   % "test"
     )
 
-## 接続情報
+## How to configure the database connectivity
 
-ConnectionPool を設定する trait を用意して mixin する方法があります。複数のデータソースを使用する場合にも ConnectionPool.add(...) を使用して同様に設定すれば OK です。
+Preparing a trait which set up a ConnectionPool and mixing in the trait is a good way to configure. Even if you have multilpe data sources, you can use `ConnectionPool.add(...)`.
 
     trait TestDBSettings {
 
@@ -42,29 +42,29 @@ ConnectionPool を設定する trait を用意して mixin する方法があり
       }
     }
 
-もちろん Web アプリケーションの開発などフレームワーク側で設定を読み込む仕組みがある場合はそれに従うのがスムーズかと思います。
+Of course, if you would like to use the settings came from some Web frameworks or similar (e.g. Play Framework), it would be smooth to follow the way of them.
 
-Typesafe Config を使っている場合は
+If you use Typesafe Config:
 
 [https://github.com/typesafehub/config](https://github.com/typesafehub/config)
 
-scalikejdbc-config を使うことができます。
+You can use scalikejdbc-config.
 
 [https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-config](https://github.com/scalikejdbc/scalikejdbc/tree/master/scalikejdbc-config)
 
-Play の設定は Typesafe Config になっていますが、それ以外のアプリケーションでも例えば application.conf で以下のように設定が書かれている場合
+Play's configuration uses Typesafe Config library. When the configuration is defined in `application.conf`:
 
     db.default.url="jdbc:h2:mem:sample1"
     db.default.driver="org.h2.Driver"
     db.default.user="sa"
     db.default.password="secret"
 
-初期化処理で以下のようにして簡単に読み込むことができます。
+You can easily load the settings while initializing the code.
 
     import scalikejdbc.config._
     DBs.setup()
 
-複数の設定が指定されていて一括で読み込む場合は
+To load multiple configurations:
 
     db.foo.url="jdbc:h2:mem:sample2"
     db.foo.driver="org.h2.Driver"
@@ -76,19 +76,19 @@ Play の設定は Typesafe Config になっていますが、それ以外のア�
     db.bar.user="sa2"
     db.bar.password="secret2"
 
-DBs.setupAll を呼び出します。
+Call `DBs.setupAll`.
 
     import scalikejdbc.config._
     DBs.setupAll()
 
 
-## 自動ロールバックとフィクスチャー
+## Automatic Rollback and Fixture Support
 
-ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバックを簡単に対応させるための trait を提供しています。それぞれについて見ていきましょう。
+ScalikeJDBC provides traits to support automatic roll back after completing tests for both of ScalaTest and specs2.
 
-まずは ScalaTest の例です。ScalaTest では org.scalatest.fixture というパッケージにある基底クラスを使っている場合に自動ロールバックとフィクスチャー機能を使用することができます。
+First, here is a sample for ScalaTest users. Using base traits under `org.scalatest.fixture` package and a scalikejdbc-test's trait together, you can easilyuse automatic rollback and data fixture per a test case.
 
-自動ロールバックのみで良い場合は以下のように AutoRollback という trait を mixin して、各テストのパラメータで DBSession を受け取るだけです。この DBSession を暗黙のパラメータにしておけば、テスト対象のメソッド実行にも同じセッションを伝播させることができるので（もちろんテスト対象が DBSession を暗黙のパラメータで受け取る実装であることが前提ですが）、すべて一つのトランザクションで処理され、テスト終了後にすべてロールバックされます。
+If you need only automatic rollback, mixin the AutoRollback trait and accept a DBSession as an argument of each test code  block. Passing the implicit parameter to the method to be tested propagates the same session. Of course, the method must accept a DBSession as an implicit parameter. Doing that eventually enables you using the same transaction and rolling back the transaction after running the test.
 
     import scalikejdbc._
     import scalikejdbc.scalatest.AutoRollback
@@ -106,7 +106,7 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       }
     }
 
-デフォルト以外の DB に接続する場合は #db() というメソッドを override して接続先を差し替えてください。
+When connecting the other data sources, override #db() method to switch the data source to connect.
 
     class MemberSpec extends FlatSpec with Matchers with AutoRollback {
 
@@ -117,7 +117,7 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       ...
     }
 
-フィクスチャーが必要な場合は #fixture(DBSession) を override してください。ここでつくったデータもテスト終了時にすべてロールバックされます。
+When you need a fixture feature, override #fixture(DBSession) method. The rows created by the method should also be rolled back after running tests.
 
     class MemberSpec extends FlatSpec with Matchers with AutoRollback {
 
@@ -132,7 +132,7 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       ...
     }
 
-続いて unit スタイルの specs2 の例です。ScalaTest とは異なり Spec 全体に mixin するのではなく、各テストケースの in の後に new AutoRollback { ... } のようにして指定します。
+Next, here is a sample using specs2 in specs2's unit style. Unlike ScalaTest, you need to specify `new AutoRollback { ... }` inside each test case's `in` block.
 
     import scalikejdbc._
     import scalikejdbc.specs2.mutable.AutoRollback
@@ -147,7 +147,7 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       }
     }
 
-デフォルト以外の DB への接続、フィクスチャーは以下の通りです。各テストケース毎にカスタマイズできるので、この点は ScalaTest よりも便利かもしれません。
+Here is the way to connect another data source. Unlike ScalaTest, it's possible to specify per each test case. That might be useful than ScalaTest's one.
 
     trait AutoRollbackWithFixture extends AutoRollback {
 
@@ -165,7 +165,7 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       }
     }
 
-最後に acceptance スタイルの specs2 の例です。これもカスタマイズの仕方などの要領は unit スタイルと同様ですが case class xxx() extends AutoRollback  { def yyy() = this { ... } } という形式になります。
+Lastly, this is a specs2 sample in specs2's acceptance style. The way to customize or configure is basically same as specs2 unit style except defining a case class in a bit irregular style which doesn't have no arg constructor, like `case class xxx() extends AutoRollback  { def yyy() = this { ... } }`.
 
     import scalikejdbc._
     import scalikejdbc.specs2.AutoRollback
@@ -191,11 +191,11 @@ ScalikeJDBC では ScalaTest と specs2 に対して、自動ロールバック�
       }
     }
 
-## ConnectionPoolContext の紹介
+## ConnectionPoolContext
 
-ScalikeJDBC 本体に ConnectionPoolContext という動的に DB の向き先を切り替えることができる機能があります。暗黙のパラメータによって一時的に ConnectionPool の向き先を切り替えることができます。
+ConnectionPoolContext allows you to dynamically switch the database connection on runtime. You can use it as an implicit parameter.
 
-例えば、以下のメソッドがテスト対象であるとします。
+Let's think you're going to write some tests for the following method.
 
     object Member {
       def countAll()(implicit session: DBSession = AutoSession
@@ -204,7 +204,7 @@ ScalikeJDBC 本体に ConnectionPoolContext という動的に DB の向き先�
       }
     }
 
-　以下の例は、このテストケースだけは共通の DB 接続設定ではなく H2 のメモリ DB を使用するようにしているサンプルです。
+The following test code is a sample which enable using H2's in-memory database instead only in the test case.
 
     import org.scalatest._
     import org.scalatest.matchers._
@@ -232,9 +232,8 @@ ScalikeJDBC 本体に ConnectionPoolContext という動的に DB の向き先�
       }
     }
 
-注意点として ConnectionPoolContext を使用するためには、テスト対象のメソッドが暗黙のパラメータとして ConnectionPoolContext を受け取るようになっていなければなりません。そうなっていない場合は暗黙のパラメータに追加する必要があります。
+Note that the target method (the #countAll method in the above case) must accept ConnectionPoolContext as an implicit parameter when you use the feature.
 
+## Code generation by mapper-generator
 
-## mapper-generator によるテストの自動生成
-
-次のセクションで詳しく紹介する mapper-generator は、ソースコードの生成時にそれに対応するテストコードも自動生成してくれます。ScalaTest、specs2 からひな形を選択できるので、お好きなテンプレートを指定してください。
+The mapper-generator introduced in the next section generates the source code from an existing database table. At the same time, the generator also generates test code corresponding to the generated code. Several templates for ScalaTest and specs2 are available. You can specify the favorite one.

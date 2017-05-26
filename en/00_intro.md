@@ -12,7 +12,7 @@ Readers of this book are assumed to have some knowledge of Scala. I've kept in m
 
 I'd be glad if this book became a help to those who is interested in ScalikeJDBC.
 
-January 2013, Kazuhiro Sera ([seratch] (http://seratch.net/))
+January 2013, Kazuhiro Sera ([@seratch] (http://seratch.net/))
 
 
 # On updates to version 2
@@ -30,4 +30,20 @@ I would like to thank all the developers who gave a lot of feedback.
 
 The Cookbook has been revised to keep up with ScalikeJDBC 2.2.0. I hope ScalikeJDBC users find it useful.
 
-November 2014, Kazuhiro Sera ([seratch] (http://seratch.net/))
+November 2014, Kazuhiro Sera ([@seratch] (http://seratch.net/))
+
+# On updates to version 3
+
+I am so glad to release ScalikeJDBC 3.0 in 2017. The first time I tried Scala was in 2010. Time goes by very quickly. That's 7 years ago!
+
+The major changes in ScalikeJDBC 3.0 are:
+
+- ScalikeJDBC 3.0 requires Java 8+
+- The JSR-310 module has been merged into core library
+- An optional module which supports Reactive Streams
+
+https://github.com/scalikejdbc/scalikejdbc/blob/master/notes/3.0.0.markdown
+
+The Cookbook has been revised to keep up with ScalikeJDBC 3.0.0. I hope ScalikeJDBC users find it useful.
+
+May 2017, Kazuhiro Sera ([@seratch] (https://twitter.com/seratch))

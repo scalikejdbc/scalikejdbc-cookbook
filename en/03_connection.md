@@ -16,8 +16,8 @@ This is all you need for the DB connection configuration. After that, you can co
 
 You may wonder how the connection settings are used here. The reason is that the `DB.readOnly` internally behaves like this:
 
-    val names: List[String] = using(DB(ConnectionPool.borrow())) { db => 
-      db.readOnly { implicit session => 
+    val names: List[String] = using(DB(ConnectionPool.borrow())) { db =>
+      db.readOnly { implicit session =>
         sql"select name from members".map(rs => rs.string("name")).list.apply()
       }
     }
@@ -36,7 +36,7 @@ To use them, write as `NamedDB ('db1) readOnly {implicit session =>}` instead of
     NamedDB('db1) readOnly { implicit session =>
       // ...
     }
-    
+
     NamedDB('db2) readOnly { implicit session =>
       // ...
     }
@@ -48,7 +48,7 @@ The data source created by the `ConnectionPool.singleton(...)` method is named a
 
 Settings other than JDBC url, user name and password are customizable using the `ConnectionPoolSettings`.
 
-    ConnectionPool.singleton("jdbc:h2:mem:db", "", "", 
+    ConnectionPool.singleton("jdbc:h2:mem:db", "", "",
       new ConnectionPoolSettings(initialSize = 20, maxSize = 50))
 
 Here is the list of the settings:
@@ -71,7 +71,7 @@ Here is the list of the settings:
 
 ## Using a connection pool other than Commons DBCP
 
-`ConnectionPool` uses [Commons DBCP](http://commons.apache.org/dbcp/) as the default implementation of its connection pool. Implementations that version 2.2.0 of ScalikeJDBC offers are: commons-dbcp, commons-dbcp2 and BoneCP.
+`ConnectionPool` uses [Commons DBCP](http://commons.apache.org/dbcp/) as the default implementation of its connection pool. Implementations that version 3.0.0 of ScalikeJDBC offers are: commons-dbcp, commons-dbcp2 and BoneCP.
 
 If you prefer other connection pool implementations, you can do so like this:
 
@@ -80,7 +80,7 @@ If you prefer other connection pool implementations, you can do so like this:
         new MyConnectionPool(url, user, password)
       }
     }
-    
+
     ConnectionPool.add('xxxx, url, user, password)(new MyConnectionPoolFactory)
 
 Furthermore, it's also possible to register connection pools that internally use `DataSource`. The following example shows you how to setup with HikariCP.
@@ -118,6 +118,3 @@ You can reuse an instance of the DB class, which holds `java.sql.Connection`, as
     }
 
 That's it for the connection management. I will explain transaction management in the next section.
-
-
-

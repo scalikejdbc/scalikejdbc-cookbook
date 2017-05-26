@@ -1,30 +1,30 @@
-# 10. Play Framework との統合
+# 10. Play Framework Integration
 
-[Play Framework](http://www.playframework.com/) は元々は Ruby on Rails に強く影響された Java 向けの Web アプリケーションフレームワークでしたが、version 2.0 からは Akka ベースのアーキテクチャに書き直され、Scala での利用を基本とするフレームワークに生まれ変わりました。
+[Play! Framework](http://www.playframework.com/)  is originally a Java Web framework heavily insired by Ruby on Rails. Since version 2.0, the framework was rewritten in Scala and became an Akka-based framework.
 
-2017 年 5 月時点で最新の安定バージョンは 2.5.14 です。
+As of May 2017, the latest version of Play Framework is 2.5.14.
 
 [http://www.playframework.com/](http://www.playframework.com/)
 
-また Play 2.0 からは Lightbend Reactive Platform (旧 Typesafe Stack) の一部として Lightbend (旧 Typesafe) 社が公式にサポートしているプロダクトでもあります。
+Furthermore, Play 2 is a part of Lightbend Reactive Platform (formerly know as Typesafe Stack). Lightbend (formerly Typesafe) offically develops and supports it.
 
 [https://www.lightbend.com/platform](https://www.lightbend.com/platform)
 
 
-## ScalikeJDBC と Play
+## Relationship between ScalikeJDBC and Play
 
-ScalikeJDBC の SQL("...") から始まる API は Play が提供する Anorm という DB アクセスライブラリの API コンセプトに影響を受けています。また、Play を使った実案件で ScalikeJDBC が利用された実績が多数あり、Play の関係は強いといえます。
+The relationship with Play is strong. ScalikeJDBC's API which starts with `SQL("...")` is highly inspired by the concept of Anorm, a database library provided by Play project. As you know, in the real world, many Web service projects in Scala are built with Play. Thankfully, some of them use ScalikeJDBC.
 
 
-## Play アプリで ScalikeJDBC を使う
+## Using ScalikeJDBC in Play apps
 
-Play はプラガブルな機構を提供しているフレームワークです。ScalikeJDBC も Play モジュールを提供し、スムーズに Play アプリに組み込めるようサポートしています。
+Play is a pluggable framework. ScalikeJDBC project provides a Play module to smoothly integrate the library to Play apps.
 
 [https://github.com/scalikejdbc/scalikejdbc-play-support](https://github.com/scalikejdbc/scalikejdbc-play-support)
 
 ### project/Build.scala
 
-H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
+Play Framework has H2 database dependency out-of-the-box. If you go with H2, you don't need to add JDBC drivers. Otherwise, having JDBC drivers in libraryDependencies is necessary.
 
     lazy val root = (project in file("."))
       .enablePlugins(PlayScala)
@@ -39,37 +39,37 @@ H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
 
 ### conf/application.conf
 
-ScalikeJDBC の PlayModule を追加します。
+Add the `scalikejdbc.PlayModule`.
 
     play.modules.enabled += "scalikejdbc.PlayModule"
 
-Play の標準の DB プラグインと同じキー名で接続設定を記述することができます。ConnectionPool の設定値は独自のものです。
+You can use the standard configuration of Play apps. Only the attributes for ConnectionPool are ScalikeJDBC specific.
 
-    # DB で接続する DB
+    # DB to connect
     db.default.driver=org.h2.Driver
     db.default.url="jdbc:h2:mem:play"
     db.default.user="sa"
     db.default.password="sa"
 
-    # ScalikeJDBC 独自の ConnectionPool 設定
+    # Extra configuration, ScalikeJDBC specific
     db.default.poolInitialSize=10
     db.default.poolMaxSize=10
     db.default.poolValidationQuery=
 
-default 以外は以下のように記述します。
+For non-default ones, specify the name like `another` in the following sample:
 
-    # NamedDB('another) で接続する DB
+    # NamedDB('another)
     db.another.driver=org.h2.Driver
     db.another.url="jdbc:h2:mem:play"
     db.another.user="sa"
     db.another.password="sa"
 
-    # ScalikeJDBC 独自の ConnectionPool 設定
+    # Extra configuration, ScalikeJDBC specific
     db.another.poolInitialSize=10
     db.another.poolMaxSize=10
     db.another.poolValidationQuery=
 
-SQL ロギングなどの ScalikeJDBC 共通設定は以下のように渡します。
+ScalikeJDBC's global configurations:
 
     # グローバル設定
     scalikejdbc.global.loggingSQLAndTime.enabled=true
@@ -78,20 +78,19 @@ SQL ロギングなどの ScalikeJDBC 共通設定は以下のように渡しま
     scalikejdbc.global.loggingSQLAndTime.warningThresholdMillis=1000
     scalikejdbc.global.loggingSQLAndTime.warningLogLevel=warn
 
-### Play 起動
+### Invoking your Play app
 
-あとは通常通り sbt run で起動するだけです。もし設定に問題があれば最初の DB 接続時に例外が発生します。
-
+Simply invoke by `sbt run` commannd. If the configuration has some problems, an exception will be thrown when connecting to the database for the first time.
 
 ## scalikejdbc-play-fixture
 
-Play アプリのテスト用に fixture 機能を提供しています。
+The module provides a fixture feature for testing with Play apps.
 
 [https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture](https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture
 
 ### conf/application.conf
 
-必ず PlayModule よりも後にロードしてください。
+Don't forget loading the `scalikejdbc.PlayFixtureModule` after `scalikejdbc.PlayModule`.
 
     play.modules.enabled += "scalikejdbc.PlayModule"
     play.modules.enabled += "scalikejdbc.PlayFixtureModule"
@@ -99,7 +98,7 @@ Play アプリのテスト用に fixture 機能を提供しています。
 
 ### conf/db/fixtures/default/project.sql
 
-fixture データの生成と削除を記述します。
+Express the statements to create or delete fixture data as below:
 
     # --- !Ups
     insert into project (id, name, folder) values (1, 'Play 2.0', 'Play framework');

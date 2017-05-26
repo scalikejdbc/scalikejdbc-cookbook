@@ -1,14 +1,14 @@
-# 7. SQL ロギング
+# 7. SQL Logging
 
-ScalikeJDBC では実行した SQL とそのレスポンスタイムをログ出力する機能があります。スタックトレースを併せて出力するのでどのクラスのどのメソッドから発行されたものかもすぐにわかるようになっています。
+ScalikeJDBc provides a feature to print an SQL statement and its response time. Since the logging feature also prints its stack trace, you can easily understand what method (and what class) a query was issued.
 
-デフォルトではデバッグレベルですべての SQL を出力、一定値以上の時間がかかった SQL は WARN レベルでログ出力するようになっています。
+By default, the library prints all the SQL statements in DEBUG logging level and prints the ones which spent longer time than the library's threshold in WARN logging level.
 
-このログ出力は SLF4J の API に対応していますので、必要な実装と設定を行ってください。
+The logging feature supports the slf4j API. Set up needed implementation or configuration in the slf4j's way.
 
-## 設定
+## Configuration
 
-GlobalSettings に LoggingSQLAndTimeSettings を設定します。設定内容は以下の通りです。
+You can configure LoggingSQLAndTimeSettings in GlobalSettings.
 
     import scalikejdbc._
     GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
@@ -19,15 +19,15 @@ GlobalSettings に LoggingSQLAndTimeSettings を設定します。設定内容�
       warningLogLevel = 'WARN
     )
 
-## SLF4J の実装を設定
+## Specifying an implementation of SLF4J
 
-slf4j-api をサポートする実装を指定してください。以下では logback を使用した例を示します。
+Specify an implementation which is compatible with slf4j-api. Here is a sample which shows you how to use logback.
 
-まず sbt の設定に依存ライブラリとして logback を追加します。
+First, add the logback library to libraryDependencies.
 
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.+"
 
-次に src/main/resources のようなクラスパスのルートディレクトリに logback.xml というファイル名でログの設定を記述します。
+Next, put logback.xml under the classpath root directory like `src/main/resources`
 
     <configuration>
       <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -40,9 +40,9 @@ slf4j-api をサポートする実装を指定してください。以下では 
       </root>
     </configuration>
 
-## 出力イメージ
+## Output Sample
 
-このようなイメージで出力されます。この場合は models.User.findByEmail(...) というメソッドから発行されていることがわかります。
+The library prints as below. In the case, you can see the query was issued inside `models.User.findByEmail(...)`.
 
     [debug] s.StatementExecutor$$anon$1 - SQL execution completed
 
@@ -68,11 +68,11 @@ slf4j-api をサポートする実装を指定してください。以下では 
         akka.actor.Actor$class.apply(Actor.scala:318)
         ...
 
-　あまり問題になるケースはないかとは思いますが、ここに出力された SQL は ScalikeJDBC が SQL テンプレートから組み立てたものなので、実際に JDBC ドライバーから DB に発行されたクエリと全く同じであるとは限りません（見やすくするために不要な空白を除去するなどの処理も入っています）。
+I beleive it doesn't matter in most cases, the printed SQL queries are built by ScalikeJDBC library and that is different from an actual one issued to the database server.
 
-## シングルラインモード
+## Single Line Mode
 
-上記のようにスタックトレースまでは不要で、実行した SQL を一行で出力するだけでよいという場合はシングルラインモードを有効にしてください。
+If you don't need the stack trace part, you can set `GlobalSettings.loggingSQLAndTime.singleLineMode` as true.
 
     GlobalSettings.loggingSQLAndTime = new LoggingSQLAndTimeSettings(
       enabled = true,
@@ -80,6 +80,6 @@ slf4j-api をサポートする実装を指定してください。以下では 
       logLevel = 'DEBUG
     )
 
-以下のように出力されます。
+Here is a sample output:
 
     2013-05-26 16:23:08,072 DEBUG [pool-4-thread-4] s.StatementExecutor$$anon$1 [Log.scala:81] [SQL Execution] select * from user where email = 'guillaume@sample.com'; (0 ms)

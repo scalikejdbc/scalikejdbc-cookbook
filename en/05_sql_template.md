@@ -8,7 +8,7 @@ This is the normal JDBC SQL template. Placeholders are expressed as `?` and bind
 
     val now = DateTime.now
     SQL("""
-      insert into members (id, name, memo, created_at, updated_at) 
+      insert into members (id, name, memo, created_at, updated_at)
       values (?, ?, ?, ?, ?)
       """)
       .bind(123, "Alice", None, now, now)
@@ -22,8 +22,8 @@ In this pattern, you specify named placeholders in the form of `{name}` and pass
       values ({id}, {name}, {memo}, {now}, {now})
       """)
       .bindByName(
-        'id -> 123, 
-        'name -> "Alice", 
+        'id -> 123,
+        'name -> "Alice",
         'memo -> None,
         'now -> DateTime.now
       )
@@ -35,13 +35,13 @@ This is just like the named SQL template, but you specify named placeholders as 
     SQL("""
       insert into members (id, name, memo, created_at, updated_at) values (
         /*'id*/12345,
-        /*'name*/'Alice', 
-        /*'memo*/'memo', 
-        /*'now*/'2001-01-02 00:00:00', 
+        /*'name*/'Alice',
+        /*'memo*/'memo',
+        /*'now*/'2001-01-02 00:00:00',
         /*'now*/'2001-01-02 00:00:00')
       """)
       .bindByName(
-        'id -> 123, 
+        'id -> 123,
         'name -> "Alice",
         'memo -> None,
         'now -> DateTime.now
@@ -56,7 +56,7 @@ You can embed parameters as `${expression}`.
 
     val now = DateTime.now
     sql"""
-      insert into members (id, name, memo, created_at, updated_at) values 
+      insert into members (id, name, memo, created_at, updated_at) values
       (${123}, ${"Alice"}, ${None}, ${now}, ${now})
     """.update.apply()
 
@@ -117,7 +117,7 @@ To rewrite this by using SQLSyntaxSupport, prepare some definitions;
       }
     }
     object Team extends SQLSyntaxSupport[Team] {
-      def apply(t: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
+      def apply(t: ResultName[Team])(implicit rs: WrappedResultSet): Team = {
         new Team(id = rs.long(t.id), name = rs.string(t.name))
       }
     }
@@ -184,17 +184,17 @@ QueryDSL is a type safe query builder DSL that can generate `sql"..."` efficient
 The previous example;
 
     sql"""
-      insert into members (id, name, memo, created_at, updated_at) values 
+      insert into members (id, name, memo, created_at, updated_at) values
       (${123}, ${"Alice"}, ${None}, ${now}, ${now})
     """.update.apply()
 
 can be rewritten as below (a Member object extending SQLSyntaxSupport needs to be defined);
 
     object Member extends SQLSyntaxSupport[Member] {
-    
+
       def insert(id: Long, name: String, memo: Option[String]) = DB.localTx { implicit s =>
         val now = DateTime.now
-        withSQL { 
+        withSQL {
           insert.into(Member)
             .columns(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
             .values(id, name, memo, now, now)
@@ -204,7 +204,7 @@ can be rewritten as below (a Member object extending SQLSyntaxSupport needs to b
 
     val ordering: SQLSyntax = if (isDesc) sqls"desc" else sqls"asc" // or SQLSyntax("desc")
     val id: Int = 1234
-    
+
     val m = Member.syntax("m")
     val names = select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
       .map(rs => rs.long(m.name)).list.apply()
@@ -212,5 +212,3 @@ can be rewritten as below (a Member object extending SQLSyntaxSupport needs to b
 ## Summary
 
 You can choose from the four patterns of SQL templates supported by ScalikeJDBC depending on your needs. I, however, recommend using SQL interpolation considering convenience, security and future improvements.
-
-

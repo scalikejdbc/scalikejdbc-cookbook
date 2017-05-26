@@ -57,7 +57,7 @@ SQLInterpolation は Seq でパラメータを受け取ることができます�
 
 従来の SQL 構文では in 句をサポートする特別な構文はありません。以下のように SQL を組み立てて対応してください。
 
-    val members = DB readOnly { implicit s => 
+    val members = DB readOnly { implicit s =>
       val * = (rs: WrappedResultSet) => Member(rs.long("id"), rs.string("name"))
       val memberIds = List(1, 2, 3)
       val query = "select * from members where id in (%s)".format(memberIds.map(_ => "?").mkString(","))
@@ -70,11 +70,11 @@ SQLInterpolation は Seq でパラメータを受け取ることができます�
 
 元々存在する SQL があればそれを引き継いで組み込むのも現実かと思いますが、新しいプログラムであればなるべくメンテナンスしやすいものにしたいところです。
 
-前のセクションで SQLInterpolation に SQLSyntaxSupport という機能を紹介しましたが join クエリを多く書く場合はぜひこれを活用してください。
+前のセクションで SQLSyntaxSupport という機能を紹介しましたが join クエリを多く書く場合はぜひこれを活用してください。
 
 ### Joda Time ではなく Java SE 8 の Date Time API を使う
 
-ScalikeJDBC は Java SE 7 のサポートも続けているので、拡張用の別のライブラリとして Date Time API をサポートしています。以下の通りライブラリを追加します。
+ScalikeJDBC 2.x については Java SE 7 のサポートも続けているので、拡張用の別のライブラリとして Date Time API をサポートしています。以下の通りライブラリを追加します。
 
     libraryDependencies += "org.scalikejdbc" %% "scalikejdbc-jsr310" % "2.2.+"
 
@@ -82,7 +82,18 @@ ScalikeJDBC は Java SE 7 のサポートも続けているので、拡張用の
 
     import scalikejdbc._, jsr310._
     import java.time._
-                                    
+
+    case class Group(id: Long, name: Option[String], createdAt: ZonedDateTime)
+    object Group extends SQLSyntaxSupport[Group] {
+      def apply(g: SyntaxProvider[Group])(rs: WrappedResultSet): Group = apply(g.resultName)(rs)
+      def apply(g: ResultName[Group])(rs: WrappedResultSet): Group = Group(rs.get(g.id), rs.get(g.name), rs.get(g.createdAt))
+    }
+
+なお ScalikeJDBC 3.0.0 からは Java SE 8 以上のみをサポートしているため、標準で Date Time API をサポートするようになりました。API はそのまま互換性を維持していますが scalikejdbc-jsr310 の追加、scalikejdbc.jsr310._ の import が不要となりました。
+
+    import scalikejdbc._
+    import java.time._
+
     case class Group(id: Long, name: Option[String], createdAt: ZonedDateTime)
     object Group extends SQLSyntaxSupport[Group] {
       def apply(g: SyntaxProvider[Group])(rs: WrappedResultSet): Group = apply(g.resultName)(rs)
@@ -152,5 +163,3 @@ batchByName は 名前付き SQL テンプレート、または実行可能な S
 
     val params: Seq[Seq[(Symbol, Any)]] = (1 to 1000).map(i => Seq('id -> i, 'name -> "user_" + i))
     SQL("insert into members values ({id}, {name})").batchByName(params: _*).apply()
-
-

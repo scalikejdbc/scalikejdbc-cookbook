@@ -13,9 +13,9 @@ ScalikeJDBC の API を直接使うこともできるので SQL をベースに�
 ## ライブラリを追加
 
     libraryDependencies ++= Seq(
-      "org.skinny-framework" %% "skinny-orm"      % "1.3.+",
+      "org.skinny-framework" %% "skinny-orm"      % "2.0.+",
       "com.h2database"       %  "h2"              % "1.4.+",
-      "ch.qos.logback"       %  "logback-classic" % "1.1.+"
+      "ch.qos.logback"       %  "logback-classic" % "1.2.+"
     )
 
 ## SkinnyCRUDMapper
@@ -27,7 +27,7 @@ SkinnyCRUDMapper だけでなく Skinny ORM の *Mapper trait は ScalikeJDBC �
     import scalikejdbc._
     import skinny.orm._
     import org.joda.time._
-    
+
     case class Member(id: Long, name: Option[String], createdAt: DateTime)
     object Member extends SkinnyMapper[Member] {
       override lazy val defaultAlias = createAlias("m")
@@ -68,5 +68,3 @@ ScalikeJDBC の API もそのまま使えます。
 ORM なので関連の解決など豊富な機能を提供しています。ここでは導入の紹介のみにとどめますので、詳しくは公式サイトのドキュメントをご覧ください。
 
 http://skinny-framework.org/documentation/orm.html
-
-

@@ -16,8 +16,8 @@ ConnectionPool というオブジェクトに JDBC の設定を渡します。JD
 
 なぜこれで接続設定が読み込まれるのでしょうか？それは DB.readOnly が内部的には以下のような処理をしているためです。
 
-    val names: List[String] = using(DB(ConnectionPool.borrow())) { db => 
-      db.readOnly { implicit session => 
+    val names: List[String] = using(DB(ConnectionPool.borrow())) { db =>
+      db.readOnly { implicit session =>
         sql"select name from members".map(rs => rs.string("name")).list.apply()
       }
     }
@@ -36,7 +36,7 @@ ScalikeJDBC では、一つのアプリケーションから複数のデータ�
     NamedDB('db1) readOnly { implicit session =>
       // ...
     }
-    
+
     NamedDB('db2) readOnly { implicit session =>
       // ...
     }
@@ -48,7 +48,7 @@ ScalikeJDBC では、一つのアプリケーションから複数のデータ�
 
 JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSettings を使ってカスタマイズすることができます。
 
-    ConnectionPool.singleton("jdbc:h2:mem:db", "", "", 
+    ConnectionPool.singleton("jdbc:h2:mem:db", "", "",
       new ConnectionPoolSettings(initialSize = 20, maxSize = 50))
 
 設定の一覧は以下の通りです
@@ -71,7 +71,7 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
 
 ## Commons DBCP 以外のコネクションプールを使う
 
-上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 2.2.0 時点では標準では commons-dbcp、commons-dbcp2、BoneCP の実装を提供しています。
+上記の ConnectionPool は [Commons DBCP](http://commons.apache.org/dbcp/) をコネクションプールの実装として使用しています。version 3.0.0 時点では標準では commons-dbcp、commons-dbcp2、BoneCP の実装を提供しています。
 
 別のコネクションプールの実装を使いたいという場合は以下のようにして拡張することができます。
 
@@ -80,7 +80,7 @@ JDBC の url、ユーザ名、パスワード以外の設定は ConnectionPoolSe
         new MyConnectionPool(url, user, password)
       }
     }
-    
+
     ConnectionPool.add('xxxx, url, user, password)(new MyConnectionPoolFactory)
 
 また DataSource 経由で利用するコネクションプールを登録することもできます。以下は HikariCP の設定例です。
@@ -117,5 +117,3 @@ http://brettwooldridge.github.io/HikariCP/
     }
 
 以上、コネクション管理について説明しました。トランザクション管理については次のセクションで解説します。
-
-

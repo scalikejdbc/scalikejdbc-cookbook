@@ -8,7 +8,7 @@ JDBC の通常のテンプレートです。プレースホルダは「?」で�
 
     val now = DateTime.now
     SQL("""
-      insert into members (id, name, memo, created_at, updated_at) 
+      insert into members (id, name, memo, created_at, updated_at)
       values (?, ?, ?, ?, ?)
       """)
       .bind(123, "Alice", None, now, now)
@@ -18,12 +18,12 @@ JDBC の通常のテンプレートです。プレースホルダは「?」で�
 名前付きプレースホルダを「{name}」の名前付きの形式で指定し、バインド変数は #bindByName(...) で (Symbol -> Any) を順不同で指定します。これは Play! Framework で提供されている Anorm という DB アクセスライブラリと同様の仕様です。
 
     SQL("""
-      insert into members (id, name, memo, created_at, updated_at) 
+      insert into members (id, name, memo, created_at, updated_at)
       values ({id}, {name}, {memo}, {now}, {now})
       """)
       .bindByName(
-        'id -> 123, 
-        'name -> "Alice", 
+        'id -> 123,
+        'name -> "Alice",
         'memo -> None,
         'now -> DateTime.now
       )
@@ -37,13 +37,13 @@ JDBC の通常のテンプレートです。プレースホルダは「?」で�
     SQL("""
       insert into members (id, name, memo, created_at, updated_at) values (
         /*'id*/12345,
-        /*'name*/'Alice', 
-        /*'memo*/'memo', 
-        /*'now*/'2001-01-02 00:00:00', 
+        /*'name*/'Alice',
+        /*'memo*/'memo',
+        /*'now*/'2001-01-02 00:00:00',
         /*'now*/'2001-01-02 00:00:00')
       """)
       .bindByName(
-        'id -> 123, 
+        'id -> 123,
         'name -> "Alice",
         'memo -> None,
         'now -> DateTime.now
@@ -58,7 +58,7 @@ Scala 2.10 から使えるようになった SIP-11 String Interpolation によ�
 
     val now = DateTime.now
     sql"""
-      insert into members (id, name, memo, created_at, updated_at) values 
+      insert into members (id, name, memo, created_at, updated_at) values
       (${123}, ${"Alice"}, ${None}, ${now}, ${now})
     """.update.apply()
 
@@ -117,7 +117,7 @@ SQLSyntaxSupport という trait を使うと特に join クエリでの SQL イ
       }
     }
     object Team extends SQLSyntaxSupport[Team] {
-      def apply(t: ResultName[Team])(implicit rs: WrappedResultSet): Team = { 
+      def apply(t: ResultName[Team])(implicit rs: WrappedResultSet): Team = {
         new Team(id = rs.long(t.id), name = rs.string(t.name))
       }
     }
@@ -184,17 +184,17 @@ http://scalikejdbc.org/documentation/auto-macros.html
 例えば、先に例であげた以下の SQL は
 
     sql"""
-      insert into members (id, name, memo, created_at, updated_at) values 
+      insert into members (id, name, memo, created_at, updated_at) values
       (${123}, ${"Alice"}, ${None}, ${now}, ${now})
     """.update.apply()
 
 は以下のように記述できます（SQLSyntaxSupport を継承した Member object を定義する必要があります）。
 
     object Member extends SQLSyntaxSupport[Member] {
-    
+
       def insert(id: Long, name: String, memo: Option[String]) = DB.localTx { implicit s =>
         val now = DateTime.now
-        withSQL { 
+        withSQL {
           insert.into(Member)
             .columns(column.id, column.name, column.memo, column.createdAt, column.updatedAt)
             .values(id, name, memo, now, now)
@@ -204,7 +204,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
     val ordering: SQLSyntax = if (isDesc) sqls"desc" else sqls"asc" // or SQLSyntax("desc")
     val id: Int = 1234
-    
+
     val m = Member.syntax("m")
     val names = select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
       .map(rs => rs.long(m.name)).list.apply()
@@ -212,5 +212,3 @@ http://scalikejdbc.org/documentation/auto-macros.html
 ## まとめ
 
 以上、ScalikeJDBC では計 4 種類の SQL テンプレートをサポートしていますが、基本的には用途や好みにあわせて使い分けていただくのがよいかと思います。メンテナとしては、利便性、セキュリティ、今後の発展性も考えて SQL インターポレーションを使うことを推奨いたします。
-
-
