@@ -13,8 +13,6 @@ http://www.amazon.co.jp/gp/product/B00AW0AC06
 
 ## English Edition
 
-Work in progress:
-
 https://github.com/scalikejdbc/scalikejdbc-cookbook/tree/master/en
 
 ## License

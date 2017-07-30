@@ -10,7 +10,7 @@
 * [SQL ロギング](07_sql_logging.md)
 * [ユニットテスト](08_unittest.md)
 * [ソースコード自動生成](09_source_code_generator.md)
-* [Play! Framework との統合](10_play.md)
+* [Play Framework との統合](10_play.md)
 * [dbconsole](11_dbconsole.md)
 * [Skinny ORM](12_skinny_orm.md)
 * [今後と貢献](13_future.md)
