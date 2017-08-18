@@ -87,7 +87,7 @@ SQL ロギングなどの ScalikeJDBC 共通設定は以下のように渡しま
 
 Play アプリのテスト用に fixture 機能を提供しています。
 
-[https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture](https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture
+[https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture](https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture)
 
 ### conf/application.conf
 
