@@ -86,7 +86,7 @@ Simply invoke by `sbt run` commannd. If the configuration has some problems, an 
 
 The module provides a fixture feature for testing with Play apps.
 
-[https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture](https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture
+[https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture](https://github.com/scalikejdbc/scalikejdbc-play-support/tree/2.5/scalikejdbc-play-fixture)
 
 ### conf/application.conf
 
