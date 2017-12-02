@@ -14,7 +14,7 @@ It runs queries in read-only mode. If a non-SELECT statement is issued in this m
 
     // java.sql.SQLException occurs
     DB readOnly { implicit session =>
-      sql"update members set name = ${"Alice"} where id = ${1}").update.apply()
+      sql"update members set name = ${"Alice"} where id = ${1}".update.apply()
     }
 
 For a non-default datasource, it needs to be written as follows:
