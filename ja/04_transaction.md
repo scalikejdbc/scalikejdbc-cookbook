@@ -14,7 +14,7 @@ ScalikeJDBC には 4 種類の DB ブロックがあります。
 
     // java.sql.SQLException が発生する
     DB readOnly { implicit session =>
-      sql"update members set name = ${"Alice"} where id = ${1}").update.apply()
+      sql"update members set name = ${"Alice"} where id = ${1}".update.apply()
     }
 
 デフォルトでないデータソースの場合は以下のように記述します。
