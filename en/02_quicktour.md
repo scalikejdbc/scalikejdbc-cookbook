@@ -89,7 +89,7 @@ If no exception occured in the previous `create table`, a table should have been
     }
     // => members: List[Map[String,Any]] = List()
 
-An empty `List` have been returned because there are still no data.
+An empty `List` has been returned because there are still no data.
 
 Now, let's try to insert some records. Since the part that starts with `SQL` does not actually issue the SQL until you call the `apply()`, you can re-use it as many times as you like, such as:
 
