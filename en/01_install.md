@@ -12,7 +12,7 @@ sbt is the _de facto_ standard build tool in Scala.
 
 [Http://www.scala-sbt.org/](http://www.scala-sbt.org/)
 
-Although launching sbt is as simple as runing sbt-launch.jar by the java command, Mac users may find it easier to installing it via MacPorts;
+Although launching sbt is as simple as running sbt-launch.jar by the java command, Mac users may find it easier to installing it via MacPorts;
 
     port install sbt
 
