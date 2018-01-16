@@ -4,7 +4,7 @@ This book guides you exhaustively through the usage of [ScalikeJDBC](https://git
 
 ScalikeJDBC, as it's name suggests, is a library that provides an API to allow writing of JDBC-handling code more Scala-like than using it directly. It aims to enable flexible and stress-free DB accesses using SQL in Scala applications.
 
-The library was originally written as an experiment by referring to [Querulous](https://github.com/twitter/querulous) which Twitter Inc. published in 2011, but in early 2012 I came across a scene where I mymself wanted to use it. It was then brushed up to its form today so as to be used in production level.
+The library was originally written as an experiment by referring to [Querulous](https://github.com/twitter/querulous) which Twitter Inc. published in 2011, but in early 2012 I came across a scene where I myself wanted to use it. It was then brushed up to its form today so as to be used in production level.
 
 Then since [Cake Solutions Team Blog](http://www.cakesolutions.net/teamblogs/), a famous information source for Scala, picked it up at the corner of "This week in #Scala", feedback and usage reports have gradually been sent more often.
 
