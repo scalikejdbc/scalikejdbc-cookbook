@@ -1,11 +1,11 @@
 # 13. Future with You
 
-We started the ScalikeJDBC project in November 2011. Many companies and projects use the library now, but we understand there is still some rooms to improve. 
+We started the ScalikeJDBC project in November 2011. Many companies and projects use the library now, but we understand there is still some room for improvement. 
 We take backward compatibility and stability for existing users seriously. Meanwhile, we will follow Scala language's evolution and make the library edge.
 
-As you know, ScalikeJDBC is an open source software project. Not only core maintainers but all developers who are interested in ScalieJDBC can make the library better than ever.
+As you know, ScalikeJDBC is an open source software project. Not only core maintainers but all developers who are interested in ScalikeJDBC can make the library better than ever.
 
-Let me tell us about a portion of infomration you should know when you contribute to the library.
+Let me tell us about a portion of information you should know when you contribute to the library.
 
 
 ## License
