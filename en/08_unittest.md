@@ -86,7 +86,7 @@ Call `DBs.setupAll`.
 
 ScalikeJDBC provides traits to support automatic roll back after completing tests for both of ScalaTest and specs2.
 
-First, here is a sample for ScalaTest users. Using base traits under `org.scalatest.fixture` package and a scalikejdbc-test's trait together, you can easilyuse automatic rollback and data fixture per a test case.
+First, here is a sample for ScalaTest users. Using base traits under `org.scalatest.fixture` package and a scalikejdbc-test's trait together, you can easily use automatic rollback and data fixture per a test case.
 
 If you need only automatic rollback, mixin the AutoRollback trait and accept a DBSession as an argument of each test code  block. Passing the implicit parameter to the method to be tested propagates the same session. Of course, the method must accept a DBSession as an implicit parameter. Doing that eventually enables you using the same transaction and rolling back the transaction after running the test.
 
@@ -193,7 +193,7 @@ Lastly, this is a specs2 sample in specs2's acceptance style. The way to customi
 
 ## ConnectionPoolContext
 
-ConnectionPoolContext allows you to dynamically switch the database connection on runtime. You can use it as an implicit parameter.
+ConnectionPoolContext allows you to dynamically switch the database connection at runtime. You can use it as an implicit parameter.
 
 Let's think you're going to write some tests for the following method.
 
