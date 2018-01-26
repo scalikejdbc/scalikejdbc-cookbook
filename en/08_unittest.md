@@ -7,8 +7,8 @@ In this section, we will show you test code samples using ScalikeJDBC's testing 
 scalikejdbc-test is a sub project which provides supports for both of ScalaTest and specs2. The feature is supported since ScalikeJDBC version 1.4.2.
 
     val appDependencies = Seq(
-      "org.scalikejdbc"   %% "scalikejdbc"      % "3.0.+",
-      "org.scalikejdbc"   %% "scalikejdbc-test" % "3.0.+"   % "test",
+      "org.scalikejdbc"   %% "scalikejdbc"      % "3.2.+",
+      "org.scalikejdbc"   %% "scalikejdbc-test" % "3.2.+"   % "test",
       "org.scalatest"     %% "scalatest"        % "3.0.+"   % "test"
       "org.specs2"        %% "specs2-core"      % "3.8.9"   % "test"
     )
