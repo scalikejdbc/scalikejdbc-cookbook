@@ -14,7 +14,7 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
 
     // JDBC ドライバーの指定を忘れずに
     libraryDependencies += "org.hsqldb" % "hsqldb" % "2.+"
-    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "3.0.+")
+    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "3.2.+")
 
 ### project/scalikejdbc.properties
 

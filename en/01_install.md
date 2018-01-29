@@ -34,7 +34,7 @@ Make a file named build.sbt with the content such as the following.
     scalaVersion: = "2.12.2"
 
     libraryDependencies ++ = Seq (
-      "Org.scalikejdbc" %% "scalikejdbc"  % "3.0.+ ",
+      "Org.scalikejdbc" %% "scalikejdbc"  % "3.2.+ ",
       "Org.slf4j"       %  "slf4j-simple" % "1.7.+ ",
       "Com.h2database"  %  "h2"           % "1.4.+ ",
       "org.scalatest"   %% "scalatest"    % "3.0.+" % "test"

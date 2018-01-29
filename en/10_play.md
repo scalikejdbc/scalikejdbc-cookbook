@@ -31,9 +31,9 @@ Play Framework has H2 database dependency out-of-the-box. If you go with H2, you
       .enablePlugins(SbtWeb)
       .settings(
         libraryDependencies = Seq(
-          "org.scalikejdbc" %% "scalikejdbc"                  % "3.0.+",
-          "org.scalikejdbc" %% "scalikejdbc-config"           % "3.0.+",
-          "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "3.0.+"
+          "org.scalikejdbc" %% "scalikejdbc"                  % "3.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-config"           % "3.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.6.0-scalikejdbc-3.2"
         )
       )
 

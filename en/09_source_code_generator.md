@@ -11,7 +11,7 @@ mapper-generator is an sbt plugin which generates ScalikeJDBC code from an exist
 Add the sbt plugin in the sbt setting file. Don't forget adding a JDBC driver to libraryDependencies.
 
     libraryDependencies += "org.hsqldb" % "hsqldb" % "2.+"
-    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "3.0.+")
+    addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "3.2.+")
 
 ### project/scalikejdbc.properties
 

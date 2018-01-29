@@ -31,9 +31,9 @@ H2 以外の DB を使用する場合は JDBC ドライバーも必要です。
       .enablePlugins(SbtWeb)
       .settings(
         libraryDependencies = Seq(
-          "org.scalikejdbc" %% "scalikejdbc"                  % "3.0.+",
-          "org.scalikejdbc" %% "scalikejdbc-config"           % "3.0.+",
-          "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "3.0.+"
+          "org.scalikejdbc" %% "scalikejdbc"                  % "3.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-config"           % "3.2.+",
+          "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.6.0-scalikejdbc-3.2"
         )
       )
 

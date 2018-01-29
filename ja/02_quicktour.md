@@ -250,7 +250,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
 さらに scalikejdbc-syntax-support-macro を使うと
 
-    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.0.+"
+    libraryDendencies += "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.2.+"
 
 以下のように `autoConstruct` というメソッドで簡潔に書くこともできます。
 
