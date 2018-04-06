@@ -93,7 +93,7 @@ Note that `localTx` cannot be taken out as a `DBSession` because it is a transac
 
 It runs queries and update operations within an existing transaction. You are responsible for handling the transaction and manage the datasource by yourself.
 
-    using(DB(ConnectionPool.borrow())) { db =>
+    using(DB(ConnectionPool.borrow())) { implicit db =>
       try {
         db.begin() // start of a transaction
 
