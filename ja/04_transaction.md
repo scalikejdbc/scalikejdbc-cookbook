@@ -93,7 +93,7 @@ readOnlySession と同様に autoCommitSession もあります。
 
 クエリや更新を既に存在しているトランザクション内で実行します。トランザクションについての操作はすべてライブラリ利用者によって制御される必要があります。
 
-    using(DB(ConnectionPool.borrow())) { db =>
+    using(DB(ConnectionPool.borrow())) { implicit db =>
       try {
         db.begin() // トランザクションの開始
 
