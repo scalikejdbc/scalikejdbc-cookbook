@@ -192,7 +192,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
 
     object Member extends SQLSyntaxSupport[Member] {
 
-      def insert(id: Long, name: String, memo: Option[String]) = DB.localTx { implicit s =>
+      def create(id: Long, name: String, memo: Option[String]) = DB.localTx { implicit s =>
         val now = DateTime.now
         withSQL {
           insert.into(Member)
@@ -206,8 +206,11 @@ http://scalikejdbc.org/documentation/auto-macros.html
     val id: Int = 1234
 
     val m = Member.syntax("m")
-    val names = select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
-      .map(rs => rs.long(m.name)).list.apply()
+    val names = DB.readOnly { implicit s =>
+      withSQL {
+        select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
+      }.map(rs => rs.string(m.name)).list.apply()
+    }
 
 ## まとめ
 
