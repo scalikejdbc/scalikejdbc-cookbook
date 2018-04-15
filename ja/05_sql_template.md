@@ -206,7 +206,7 @@ http://scalikejdbc.org/documentation/auto-macros.html
     val id: Int = 1234
 
     val m = Member.syntax("m")
-    val names = DB.localTx { implicit s =>
+    val names = DB.readOnly { implicit s =>
       withSQL {
         select(m.name).from(Member as m).where.eq(m.id, id).orderBy(m.id).append(ordering)
       }.map(rs => rs.string(m.name)).list.apply()
