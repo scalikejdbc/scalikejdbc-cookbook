@@ -42,19 +42,19 @@ The filename and the place to put it is unchangable. Use the following template 
 
 ### build.sbt
 
-Adding `scalikejdbcSettings` enables `scalikejdbc-gen` command.
+Adding `scalikejdbcSettings` enables `scalikejdbcGen` command.
 
     scalikejdbcSettings
 
 ## How to use
 
-The usage is quite simple. Run the `scalikejdbc-gen` with the table name to load and the class name to generate if necessary.
+The usage is quite simple. Run the `scalikejdbcGen` with the table name to load and the class name to generate if necessary.
 
-    sbt "scalikejdbc-gen [table-name (class-name)]"
+    sbt "scalikejdbcGen [table-name (class-name)]"
 
-When you have `operation_history` table and run `scalikejdbc-gen operation_history`, the code generator generates `src/main/scala/models/OperationHistory.scala` and `src/test/scala/models/OperationHistorySpec.scala`.
+When you have `operation_history` table and run `scalikejdbcGen operation_history`, the code generator generates `src/main/scala/models/OperationHistory.scala` and `src/test/scala/models/OperationHistorySpec.scala`.
 
-If you're working on a project which follows the naming convention of Ruby on Rails' ActiveRecord, run `scalikejdbc-gen operation_histories OperationHistory`. If you don't specify the class name, `OperationHistories.scala` and `OperationHistoriesSpec.scala` are generated. Furthermore, if you specify GeneratorSettings's tableNameToClassName in sbt settings, you can specify your original naming conventions.
+If you're working on a project which follows the naming convention of Ruby on Rails' ActiveRecord, run `scalikejdbcGen operation_histories OperationHistory`. If you don't specify the class name, `OperationHistories.scala` and `OperationHistoriesSpec.scala` are generated. Furthermore, if you specify GeneratorSettings's tableNameToClassName in sbt settings, you can specify your original naming conventions.
 
 ## Generated Code
 
@@ -71,7 +71,7 @@ If you have a table:
       primary key(id)
     )
 
-running `scalikejdbc-gen member` generates the following code.
+running `scalikejdbcGen member` generates the following code.
 
 ### src/main/scala/com/example/Member.scala
 
