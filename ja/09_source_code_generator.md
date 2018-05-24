@@ -45,20 +45,20 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
 
 ### build.sbt
 
-「scalikejdbcSettings」を追記して、scalikejdbc-gen　コマンドを有効にしてください。前後に空行を入れるのを忘れないよう注意してください。
+「scalikejdbcSettings」を追記して、scalikejdbcGen　コマンドを有効にしてください。前後に空行を入れるのを忘れないよう注意してください。
 
     scalikejdbcSettings
 
 
 ## 使い方
 
-scalikejdbc-gen の使い方はとてもシンプルです。scalikejdbc-gen コマンドに続いて、テーブル名を指定、必要なら生成するクラス名を指定します。
+scalikejdbc-gen の使い方はとてもシンプルです。scalikejdbcGen コマンドに続いて、テーブル名を指定、必要なら生成するクラス名を指定します。
 
-    sbt "scalikejdbc-gen [table-name (class-name)]"
+    sbt "scalikejdbcGen [table-name (class-name)]"
 
-例えば「 operation\_history 」というテーブルがあって「 scalikejdbc-gen operation\_history 」を実行すると「src/main/scala/models/OperationHistory.scala」と「src/test/scala/models/OperationHistorySpec.scala」を生成します。
+例えば「 operation\_history 」というテーブルがあって「 scalikejdbcGen operation\_history 」を実行すると「src/main/scala/models/OperationHistory.scala」と「src/test/scala/models/OperationHistorySpec.scala」を生成します。
 
-Ruby on Rails の ActiveRecord のようなテーブル命名ルールで「 operation\_histories 」というテーブル名の場合は「scalikejdbc-gen operation\_histories OperationHistory」と指定すると同様のファイル名で生成されます。クラス名を指定しないと「OperationHistories.scala」と「OperationHistoriesSpec.scala」を生成します。
+Ruby on Rails の ActiveRecord のようなテーブル命名ルールで「 operation\_histories 」というテーブル名の場合は「scalikejdbcGen operation\_histories OperationHistory」と指定すると同様のファイル名で生成されます。クラス名を指定しないと「OperationHistories.scala」と「OperationHistoriesSpec.scala」を生成します。
 またクラス名は、build.sbtやBuild.scala上でGeneratorSettingsのtableNameToClassNameという関数を設定することにより、一括して独自の命名規則を設定することも可能です。
 
 
@@ -77,7 +77,7 @@ Ruby on Rails の ActiveRecord のようなテーブル命名ルールで「 ope
       primary key(id)
     )
 
-「scalikejdbc-gen member」を実行すると以下のようなコードを生成します。
+「scalikejdbcGen member」を実行すると以下のようなコードを生成します。
 
 ### src/main/scala/com/example/Member.scala
 
