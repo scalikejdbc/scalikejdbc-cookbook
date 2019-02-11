@@ -45,9 +45,9 @@ sbt プラグイン設定を記述します。JDBC ドライバーの指定を�
 
 ### build.sbt
 
-「scalikejdbcSettings」を追記して、scalikejdbcGen　コマンドを有効にしてください。前後に空行を入れるのを忘れないよう注意してください。
+「enablePlugins(ScalikejdbcPlugin)」を追記して、scalikejdbcGen　コマンドを有効にしてください。前後に空行を入れるのを忘れないよう注意してください。
 
-    scalikejdbcSettings
+    enablePlugins(ScalikejdbcPlugin)
 
 
 ## 使い方
