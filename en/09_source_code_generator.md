@@ -42,9 +42,9 @@ The filename and the place to put it is unchangable. Use the following template 
 
 ### build.sbt
 
-Adding `scalikejdbcSettings` enables `scalikejdbcGen` command.
+Adding `enablePlugins(ScalikejdbcPlugin)` enables `scalikejdbcGen` command.
 
-    scalikejdbcSettings
+    enablePlugins(ScalikejdbcPlugin)
 
 ## How to use
 
