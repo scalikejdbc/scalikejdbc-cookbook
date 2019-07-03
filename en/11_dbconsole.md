@@ -20,13 +20,13 @@ Considering the user-friendliness, the implementation and the version of JDBC dr
 
 For Mac OS、Linux, run the following command.
 
-    curl -L http://git.io/dbconsole | sh
+    curl -L http://git.io/dbcon | sh
 
 Under your HOME directory, a script named `bin/scalikejdbc-cli/dbconsole` shoould be preprared. After reloading `~/.bash_profile`, you can run the command everywhere.
 
 If you're a Windows user, run the following batch script and setup the PATH variable.
 
-    http://git.io/dbconsole.bat
+    http://git.io/dbcon.bat
 
 These files are placed under the installed directory.
 The `config.properties` is the configuration file.

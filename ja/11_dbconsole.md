@@ -20,13 +20,13 @@ JDBC 経由で以下の DB に接続できるツールです。
 
 Mac OS、Linux の場合は以下を実行してください。
 
-    curl -L http://git.io/dbconsole | sh
+    curl -L http://git.io/dbcon | sh
 
 ホームディレクトリに「bin/scalikejdbc-cli/dbconsole」というスクリプトがインストールされます。~/.bash_profile を読み込み直すとこのスクリプトに PATH が通ります。
 
 Windows の場合は以下の batch ファイルを実行して PATH 設定を行ってください。
 
-    http://git.io/dbconsole.bat
+    http://git.io/dbcon.bat
 
 インストールされたディレクトリに以下のようなファイルが配置されています。config.properties が設定ファイル、build.sbt が sbt の設定、sandbox.h2.db は Iris データセットの入ったサンプル DB です。
 
