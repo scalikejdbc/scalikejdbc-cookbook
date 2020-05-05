@@ -2,7 +2,7 @@
 
 [Play Framework](http://www.playframework.com/) は元々は Ruby on Rails に強く影響された Java 向けの Web アプリケーションフレームワークでしたが、version 2.0 からは Akka ベースのアーキテクチャに書き直され、Scala での利用を基本とするフレームワークに生まれ変わりました。
 
-2017 年 5 月時点で最新の安定バージョンは 2.5.14 です。
+2020 年 5 月時点で最新の安定バージョンは 2.8.1 です。
 
 [http://www.playframework.com/](http://www.playframework.com/)
 
@@ -48,7 +48,7 @@ Play の標準の DB プラグインと同じキー名で接続設定を記述�
     # DB で接続する DB
     db.default.driver=org.h2.Driver
     db.default.url="jdbc:h2:mem:play"
-    db.default.user="sa"
+    db.default.username="sa"
     db.default.password="sa"
 
     # ScalikeJDBC 独自の ConnectionPool 設定
@@ -61,7 +61,7 @@ default 以外は以下のように記述します。
     # NamedDB('another) で接続する DB
     db.another.driver=org.h2.Driver
     db.another.url="jdbc:h2:mem:play"
-    db.another.user="sa"
+    db.another.username="sa"
     db.another.password="sa"
 
     # ScalikeJDBC 独自の ConnectionPool 設定

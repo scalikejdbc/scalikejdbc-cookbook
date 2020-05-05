@@ -9,7 +9,7 @@ scalikejdbc-test is a sub project which provides supports for both of ScalaTest 
     val appDependencies = Seq(
       "org.scalikejdbc"   %% "scalikejdbc"      % "3.2.+",
       "org.scalikejdbc"   %% "scalikejdbc-test" % "3.2.+"   % "test",
-      "org.scalatest"     %% "scalatest"        % "3.0.+"   % "test"
+      "org.scalatest"     %% "scalatest"        % "3.0.+"   % "test",
       "org.specs2"        %% "specs2-core"      % "3.8.9"   % "test"
     )
 
@@ -23,7 +23,7 @@ Preparing a trait which set up a ConnectionPool and mixing in the trait is a goo
         // https://github.com/typesafehub/config
         val config = ConfigFactory.load()
         val url = config.getString("jdbc.url")
-        val user = config.getString("jdbc.user")
+        val user = config.getString("jdbc.username")
         val password = config.getString("jdbc.password")
         ConnectionPool.singleton(url, user, password)
       }
@@ -56,7 +56,7 @@ Play's configuration uses Typesafe Config library. When the configuration is def
 
     db.default.url="jdbc:h2:mem:sample1"
     db.default.driver="org.h2.Driver"
-    db.default.user="sa"
+    db.default.username="sa"
     db.default.password="secret"
 
 You can easily load the settings while initializing the code.
@@ -68,12 +68,12 @@ To load multiple configurations:
 
     db.foo.url="jdbc:h2:mem:sample2"
     db.foo.driver="org.h2.Driver"
-    db.foo.user="sa"
+    db.foo.username="sa"
     db.foo.password="secret"
 
     db.bar.url="jdbc:h2:mem:sample2"
     db.bar.driver="org.h2.Driver"
-    db.bar.user="sa2"
+    db.bar.username="sa2"
     db.bar.password="secret2"
 
 Call `DBs.setupAll`.
