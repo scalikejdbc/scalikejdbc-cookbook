@@ -31,12 +31,12 @@ Make a project's root directory;
 
 Make a file named build.sbt with the content such as the following.
 
-    scalaVersion: = "2.12.2"
+    scalaVersion := "2.12.2"
 
-    libraryDependencies ++ = Seq (
-      "Org.scalikejdbc" %% "scalikejdbc"  % "3.2.+ ",
-      "Org.slf4j"       %  "slf4j-simple" % "1.7.+ ",
-      "Com.h2database"  %  "h2"           % "1.4.+ ",
+    libraryDependencies ++= Seq (
+      "org.scalikejdbc" %% "scalikejdbc"  % "3.2.+ ",
+      "org.slf4j"       %  "slf4j-simple" % "1.7.+ ",
+      "com.h2database"  %  "h2"           % "1.4.+ ",
       "org.scalatest"   %% "scalatest"    % "3.0.+" % "test"
     )
 
