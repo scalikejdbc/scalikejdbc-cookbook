@@ -2,11 +2,11 @@
 
 Skinny ORM is an O/R mapper which built upon ScalikeJDBC. Skinny ORM is a part of Skinny Framework project, a full stack web development framework started in 2013.
 
-Skinny ORM is highly inspired by Ruby on Rails's ActiveRecord library. As with Rails ActiveRecord, you can use the ORM in applications that don't depend on SKinny Framework.
+Skinny ORM is highly inspired by Ruby on Rails's ActiveRecord library. As with Rails ActiveRecord, you can use the ORM in applications that don't depend on Skinny Framework.
 
 http://skinny-framework.org/documentation/orm.html
 
-There is no barrier when you'd like to directly use ScalikeJDBC API. Using Skinny ORM should meet both demands, reducing boilerplace code and flexibility.
+There is no barrier when you'd like to directly use ScalikeJDBC API. Using Skinny ORM should meet both demands, reducing boilerplate code and flexibility.
 
 ## Adding the dependency
 
