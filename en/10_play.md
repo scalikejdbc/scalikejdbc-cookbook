@@ -2,7 +2,7 @@
 
 [Play! Framework](http://www.playframework.com/)  is originally a Java Web framework heavily insired by Ruby on Rails. Since version 2.0, the framework was rewritten in Scala and became an Akka-based framework.
 
-As of May 2017, the latest version of Play Framework is 2.5.14.
+As of May 2020, the latest version of Play Framework is 2.8.1.
 
 [http://www.playframework.com/](http://www.playframework.com/)
 
@@ -48,7 +48,7 @@ You can use the standard configuration of Play apps. Only the attributes for Con
     # DB to connect
     db.default.driver=org.h2.Driver
     db.default.url="jdbc:h2:mem:play"
-    db.default.user="sa"
+    db.default.username="sa"
     db.default.password="sa"
 
     # Extra configuration, ScalikeJDBC specific
@@ -61,7 +61,7 @@ For non-default ones, specify the name like `another` in the following sample:
     # NamedDB('another)
     db.another.driver=org.h2.Driver
     db.another.url="jdbc:h2:mem:play"
-    db.another.user="sa"
+    db.another.usename="sa"
     db.another.password="sa"
 
     # Extra configuration, ScalikeJDBC specific
